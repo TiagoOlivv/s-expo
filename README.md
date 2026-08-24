@@ -66,6 +66,29 @@ app/  →  features/  →  components/ui/  →  lib/
 
 A feature never imports another feature. Shared code moves up into `lib/` or `components/ui/`.
 
+## Environments
+
+`env.ts` recognises three environments — `development`, `preview` and `production` — and each one selects its own bundle id, package name and URL scheme.
+
+Expo only loads the standard dotenv files (`.env`, `.env.local`, `.env.[NODE_ENV]`, `.env.[NODE_ENV].local`), and the Expo docs recommend against switching environments through `NODE_ENV`. So the per-environment files here are **examples**, not files Expo reads. Copy the one you want onto `.env.local`, which overrides `.env` and is git-ignored:
+
+```bash
+cp .env.development.example .env.local   # or .env.preview.example / .env.production.example
+pnpm start --clear
+```
+
+| File | Purpose |
+| --- | --- |
+| `.env` | committed defaults, loaded on every run |
+| `.env.local` | your active environment, git-ignored |
+| `.env.development.example` | template for local development |
+| `.env.preview.example` | template for preview / QA |
+| `.env.production.example` | template for production values |
+
+EAS builds do not use these files: `eas.json` sets `EXPO_PUBLIC_APP_ENV` per build profile and reads the rest from the matching EAS environment.
+
+Never put a real secret in an `EXPO_PUBLIC_` variable — those are inlined in plain text into the app bundle.
+
 ## Before shipping a real app
 
 - `app.config.ts` — set `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` (both are intentionally empty)
