@@ -9,6 +9,7 @@ import { StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { ThemeTransition } from '@/components/ui';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
 
 import { APIProvider } from '@/lib/api';
@@ -72,7 +73,7 @@ function Providers({
         <ThemeProvider value={theme}>
           <APIProvider>
             <BottomSheetModalProvider>
-              {children}
+              <ThemeTransition>{children}</ThemeTransition>
               <FlashMessage position="top" />
             </BottomSheetModalProvider>
           </APIProvider>
