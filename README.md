@@ -45,7 +45,9 @@ Every change is written test-first.
 
 ## What ships
 
-A single route rendering one screen: a title built from the app name plus `Starter`, and a one-line description. Nothing else. There is no authentication, no tab bar and no example feature — the first feature you add is the first feature in the app.
+A single route rendering one screen: a centred title built from the app name plus `Starter`, a one-line description, and two round toggles in the top-right that flip the theme and the language in place. There is no authentication, no tab bar and no example feature — the first feature you add is the first feature in the app.
+
+Dark is the theme a fresh install starts on, and `en-US` is the starting language. Theme changes cross-fade through `ThemeTransition`, which animates the tree in place rather than remounting it.
 
 The design system in `src/components/ui` stays fully intact and tested, and `docs/reference/removed-patterns.md` keeps the working code for data fetching, stores, forms and settings rows that this template used to ship, so those conventions can be restored deliberately rather than reinvented.
 
