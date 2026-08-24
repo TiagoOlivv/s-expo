@@ -1,16 +1,15 @@
 appId: ${APP_ID}
-env:
-  Name: User
-  EMAIL: user@test.com
-  PASSWORD: password
 ---
 - launchApp
-- runFlow: ../utils/onboarding-and-login.yaml
-- assertVisible: Feed
+- runFlow:
+    when:
+      visible: Sign In
+    file: ../utils/login.yaml
+- assertVisible: Home
 - assertVisible:
-    id: style-tab
+    id: style-guide-tab
 - tapOn:
-    id: style-tab
+    id: style-guide-tab
 - assertVisible: Typography
 - tapOn:
     id: settings-tab

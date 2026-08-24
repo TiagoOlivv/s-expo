@@ -1,24 +1,16 @@
 {
-  "onboarding": {
-    "message": "Welcome to obytes app site"
+  "home": {
+    "description": "This screen is the starting point of your app. Replace it with your first feature.",
+    "title": "Home"
   },
   "settings": {
     "about": "About",
     "app_name": "App Name",
-    "arabic": "Arabic",
     "english": "English",
-    "generale": "General",
-    "github": "Github",
+    "general": "General",
     "language": "Language",
-    "links": "Links",
     "logout": "Logout",
-    "more": "More",
-    "privacy": "Privacy Policy",
-    "rate": "Rate",
-    "share": "Share",
-    "support": "Support",
-    "support_us": "Support Us",
-    "terms": "Terms of Service",
+    "portuguese": "Portuguese (Brazil)",
     "theme": {
       "dark": "Dark",
       "light": "Light",
@@ -26,8 +18,9 @@
       "title": "Theme"
     },
     "title": "Settings",
-    "version": "Version",
-    "website": "Website"
+    "version": "Version"
   },
-  "welcome": "Welcome to obytes app site"
+  "style_guide": {
+    "title": "Style Guide"
+  }
 }

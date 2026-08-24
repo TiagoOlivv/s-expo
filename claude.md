@@ -1,70 +1,56 @@
-> This project was generated from the [Obytes React Native Template](https://github.com/obytes/react-native-template-obytes), a production-ready React Native starter with modern tooling and best practices.
+# Project instructions
 
-## What: Technology Stack
+Expo template for responsive multi-platform apps (phone/tablet, iOS/Android). Derived from the Obytes React Native starter v9.0.0, then trimmed to our own conventions.
 
-- **Expo SDK 54** with React Native 0.81.5 - Managed React Native development
-- **TypeScript** - Strict type safety throughout
-- **Expo Router 6** - File-based routing (like Next.js)
-- **TailwindCSS** via Uniwind/Nativewind - Utility-first styling for React Native
-- **Zustand** - Lightweight global state management
-- **React Query** - Server state and data fetching
-- **TanStack Form + Zod** - Type-safe form handling and validation
-- **MMKV** - Encrypted local storage
-- **Jest + React Testing Library** - Unit testing
+## Stack
 
-## What: Project Structure
+- **Expo SDK 54** / React Native 0.81.5 / React 19.1 — custom dev client, Expo Go is not supported
+- **Expo Router 6** — file-based routing, typed routes enabled
+- **Uniwind + Tailwind CSS 4** — `className` on RN components; theme lives in `src/global.css` under `@theme`. This project does **not** use NativeWind
+- **TanStack Query 5** + `react-query-kit` + axios — server state
+- **Zustand 5** — client state
+- **TanStack Form + Zod 4** — forms and validation
+- **react-native-mmkv 4** — local storage
+- **i18next** — `en` and `pt-BR`
+- **Jest + React Testing Library** — unit tests; **Maestro** — E2E
+- **ESLint** (`@antfu/eslint-config`) — lints *and* formats via ESLint Stylistic. There is no Prettier
+- **pnpm** — enforced by `only-allow`
+
+## Structure
 
 ```
 src/
-├── app/              # Expo Router file-based routes (add new routes here)
-├── features/         # Feature modules - auth, feed, settings are EXAMPLES
-├── components/ui/    # Pre-built UI components (button, input, modal, etc.)
-├── lib/              # Pre-configured utilities (api, auth, i18n, storage)
-├── translations/     # i18n files (en.json, ar.json - add more languages)
-└── global.css        # TailwindCSS configuration
-
-Root Files:
-├── env.ts           # Environment config (CUSTOMIZE bundle IDs, API URLs)
-├── app.config.ts    # Expo configuration
-└── README.md        # Project-specific documentation
+├─ app/            # Expo Router routes — one-line re-exports, no logic
+├─ features/       # auth, home, settings, style-guide
+├─ components/ui/  # design system
+├─ lib/            # api, auth, i18n, storage, hooks, utils, test-utils
+└─ translations/   # en.json, pt-br.json
 ```
 
-## How: Development Workflow
+A feature folder contains: `<name>-screen.tsx`, optional `components/`, optional `api.ts`, optional `use-<name>-store.tsx`, and tests beside the files they cover.
 
-**Essential Commands:**
+## Rules
+
+- **Dependency direction** is `app/ → features/ → components/ui/ → lib/`. Never import leftwards. A feature never imports another feature — shared code moves up into `lib/` or `components/ui/`.
+- **No barrel exports inside features** (`index.ts` re-exports break Fast Refresh). Import the file directly: `@/features/auth/login-screen`.
+- **Imports**: absolute `@/…` across folders, relative `./…` within the same feature.
+- **Routes are re-exports**: `export { HomeScreen as default } from '@/features/home/home-screen';` — logic lives in the feature.
+- **TDD**: write the failing test first, then the implementation. Tests sit next to the file under test (`login-form.tsx` / `login-form.test.tsx`).
+- **Styling** is Tailwind classes via `className`. Add design tokens to `@theme` in `src/global.css`, never as inline hex.
+- **User-facing strings** go through `translate('key')` and must exist in every file under `src/translations/`.
+- **Never edit `ios/` or `android/`** — they are generated. Use Expo config plugins in `app.config.ts`.
+- **Git**: branch from `main` (`feat/…`, `fix/…`, `chore/…`, `docs/…`, `refactor/…`, `test/…`, `ci/…`). Conventional Commits, enforced by commitlint.
+
+## Commands
+
 ```bash
-pnpm start              # Start dev server
-pnpm ios/android        # Run on platform
-pnpm lint               # ESLint check
-pnpm type-check         # TypeScript validation
-pnpm test               # Run Jest tests
-pnpm check-all          # All quality checks
+pnpm start / ios / android    # run
+pnpm lint / type-check / test # individual gates
+pnpm check-all                # all gates + translation lint
+pnpm e2e-test                 # maestro
 ```
 
-**Environment-Specific:**
-```bash
-pnpm start:preview              # Preview environment
-pnpm ios:production             # Production iOS
-pnpm build:production:ios       # EAS production build
-```
+## Known rough edges
 
-## How: Key Patterns
-
-- **Create features**: New folder in `src/features/[your-feature]/` with screens, components, API hooks
-- **Add routes**: Create files in `src/app/` (file-based routing)
-- **Forms**: Use TanStack Form + Zod (see `src/features/auth/components/login-form.tsx`)
-- **Data fetching**: Use React Query (see `src/features/feed/api.ts`)
-- **Global state**: Use Zustand (see `src/features/auth/use-auth-store.tsx`)
-- **Styling**: NativeWind/Tailwind classes (see `src/components/ui/button.tsx`)
-- **Storage**: Use MMKV via `src/lib/storage.tsx` for sensitive data
-- **Imports**: Always use `@/` prefix, never relative imports
-
-## How: Essential Rules
-
-- ✅ **DO** use absolute imports: `@/components/ui/button`
-- ✅ **DO** follow feature-based structure: `src/features/[name]/`
-- ✅ **DO** use TanStack Form for forms (not react-hook-form)
-- ✅ **DO** use MMKV storage for sensitive data (not AsyncStorage)
-- ✅ **DO** use EAS Build for production: `pnpm build:production:ios`
-- ✅ **DO** prefix env vars with `EXPO_PUBLIC_*` for app access
-- ❌ **DO NOT** modify `android/` or `ios/` directly (use Expo config plugins)
+- Running Jest on a single file can hang after the tests pass (open handles from MMKV/i18n). Pass `--forceExit` for single-file runs; the full `pnpm test` run exits on its own.
+- `app.config.ts` ships with empty `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` on purpose — EAS workflows stay inert until a real app fills them in.
