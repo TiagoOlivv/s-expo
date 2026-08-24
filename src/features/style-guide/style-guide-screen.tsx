@@ -6,7 +6,7 @@ import { Colors } from './components/colors-demo';
 import { Inputs } from './components/inputs-demo';
 import { Typography } from './components/typography-demo';
 
-export function StyleScreen() {
+export function StyleGuideScreen() {
   return (
     <>
       <FocusAwareStatusBar />

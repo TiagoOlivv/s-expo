@@ -19,4 +19,4 @@ tags:
 - runFlow: ../utils/hide-keyboard.yaml
 - tapOn:
     id: login-button
-- assertVisible: Typography
+- assertVisible: Home
