@@ -1,15 +1,10 @@
 {
-  "home": {
-    "description": "This screen is the starting point of your app. Replace it with your first feature.",
-    "title": "Home"
-  },
   "settings": {
     "about": "About",
     "app_name": "App Name",
-    "english": "English",
+    "english": "English (US)",
     "general": "General",
     "language": "Language",
-    "logout": "Logout",
     "portuguese": "Portuguese (Brazil)",
     "theme": {
       "dark": "Dark",
@@ -17,10 +12,6 @@
       "system": "System",
       "title": "Theme"
     },
-    "title": "Settings",
     "version": "Version"
-  },
-  "style_guide": {
-    "title": "Style Guide"
   }
 }
