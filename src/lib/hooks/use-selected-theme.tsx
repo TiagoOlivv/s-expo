@@ -6,6 +6,9 @@ import { storage } from '../storage';
 
 const SELECTED_THEME = 'SELECTED_THEME';
 export type ColorSchemeType = 'light' | 'dark' | 'system';
+
+/** Applied on first launch, before the user has ever picked a theme. */
+export const DEFAULT_THEME: ColorSchemeType = 'dark';
 /**
  * this hooks should only be used while selecting the theme
  * This hooks will return the selected theme which is stored in MMKV
@@ -25,14 +28,11 @@ export function useSelectedTheme() {
     [_setTheme],
   );
 
-  const selectedTheme = (theme ?? 'system') as ColorSchemeType;
+  const selectedTheme = (theme ?? DEFAULT_THEME) as ColorSchemeType;
   return { selectedTheme, setSelectedTheme } as const;
 }
 // to be used in the root file to load the selected theme from MMKV
 export function loadSelectedTheme() {
-  const theme = storage.getString(SELECTED_THEME);
-  if (theme !== undefined) {
-    console.log('theme', theme);
-    Uniwind.setTheme(theme as ColorSchemeType);
-  }
+  const theme = storage.getString(SELECTED_THEME) as ColorSchemeType | undefined;
+  Uniwind.setTheme(theme ?? DEFAULT_THEME);
 }
