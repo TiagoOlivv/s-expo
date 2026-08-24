@@ -22,7 +22,7 @@ src/
 ├─ app/            # Expo Router routes — one-line re-exports, no logic
 │  ├─ _layout.tsx  # single Stack, providers
 │  └─ index.tsx    # the only screen
-├─ features/home/  # the start screen: title + description only
+├─ features/home/  # the start screen: title, description, theme + language toggles
 ├─ components/ui/  # design system
 ├─ lib/            # api, i18n, storage, hooks, utils, test-utils
 └─ translations/   # en-us.json, pt-br.json
