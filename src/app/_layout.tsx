@@ -41,7 +41,7 @@ export default function RootLayout() {
     }
 
     hasHiddenSplash.current = true;
-    SplashScreen.hide();
+    void SplashScreen.hideAsync();
   }, []);
 
   return (
