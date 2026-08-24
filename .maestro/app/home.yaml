@@ -5,3 +5,7 @@ appId: ${APP_ID}
     id: home-title
 - assertVisible:
     id: home-description
+- assertVisible:
+    id: theme-button
+- assertVisible:
+    id: language-button

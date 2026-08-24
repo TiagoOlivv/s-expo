@@ -17,4 +17,11 @@ describe('homeScreen', () => {
 
     expect(screen.getByTestId('home-description')).toBeOnTheScreen();
   });
+
+  it('shows the theme and language controls', () => {
+    render(<HomeScreen />);
+
+    expect(screen.getByTestId('theme-button')).toBeOnTheScreen();
+    expect(screen.getByTestId('language-button')).toBeOnTheScreen();
+  });
 });

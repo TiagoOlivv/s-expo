@@ -1,5 +1,14 @@
 {
   "home": {
-    "description": "This is the starting point of your app. Replace this screen with your first feature."
+    "description": "Everything is wired up and out of your way: file-based routing, a tested design system, Tailwind styling, translations, storage and a green CI pipeline. Delete this screen, add your first feature, and ship."
+  },
+  "preferences": {
+    "english": "English (US)",
+    "portuguese": "Português (Brasil)",
+    "theme": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    }
   }
 }
