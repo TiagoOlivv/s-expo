@@ -1,118 +1,70 @@
-import type { OptionType } from '@/components/ui';
-import type { ColorSchemeType } from '@/lib/hooks/use-selected-theme';
-import type { Language } from '@/lib/i18n/resources';
-
+import type { ResolvedTheme } from './toggle-preferences';
 import * as React from 'react';
-import { Options, Pressable, Text, useModal, View } from '@/components/ui';
+
+import { useUniwind } from 'uniwind';
+import { Pressable, Text, View } from '@/components/ui';
 import { useSelectedTheme } from '@/lib/hooks/use-selected-theme';
-import { translate, useSelectedLanguage } from '@/lib/i18n';
+import { useSelectedLanguage } from '@/lib/i18n';
+import { nextLanguage, nextTheme } from './toggle-preferences';
 
 /**
- * Compact theme and language switchers, anchored to the top-left of the screen.
- * Each chip shows the active value and opens its own bottom sheet.
+ * Theme and language toggles, anchored to the top-right of the screen.
+ * Each one flips straight to the other value — no picker, no bottom sheet.
  */
 export function PreferencesBar() {
   return (
-    <View className="flex-row items-center gap-2 px-6 pt-2">
-      <ThemeChip />
-      <LanguageChip />
+    <View className="flex-row items-center justify-end gap-2 px-6 pt-2">
+      <ThemeToggle />
+      <LanguageToggle />
     </View>
   );
 }
 
-function ThemeChip() {
-  const { selectedTheme, setSelectedTheme } = useSelectedTheme();
-  const modal = useModal();
-
-  const options = React.useMemo(
-    () => [
-      { label: `🌙 ${translate('preferences.theme.dark')}`, value: 'dark' },
-      { label: `🌞 ${translate('preferences.theme.light')}`, value: 'light' },
-      { label: `⚙️ ${translate('preferences.theme.system')}`, value: 'system' },
-    ],
-    [],
-  );
-
-  const onSelect = React.useCallback(
-    (option: OptionType) => {
-      setSelectedTheme(option.value as ColorSchemeType);
-      modal.dismiss();
-    },
-    [setSelectedTheme, modal],
-  );
-
-  const selected = options.find(option => option.value === selectedTheme);
+function ThemeToggle() {
+  const { theme } = useUniwind();
+  const { setSelectedTheme } = useSelectedTheme();
+  const resolved = theme as ResolvedTheme;
 
   return (
-    <>
-      <Chip
-        testID="theme-button"
-        label={selected?.label ?? selectedTheme}
-        onPress={modal.present}
-      />
-      <Options
-        ref={modal.ref}
-        options={options}
-        onSelect={onSelect}
-        value={selectedTheme}
-      />
-    </>
+    <Toggle
+      testID="theme-button"
+      accessibilityLabel={`Switch to ${nextTheme(resolved)} theme`}
+      label={resolved === 'dark' ? '🌙' : '🌞'}
+      onPress={() => setSelectedTheme(nextTheme(resolved))}
+    />
   );
 }
 
-function LanguageChip() {
+function LanguageToggle() {
   const { language, setLanguage } = useSelectedLanguage();
-  const modal = useModal();
-
-  const options = React.useMemo(
-    () => [
-      { label: translate('preferences.english'), value: 'en-US' },
-      { label: translate('preferences.portuguese'), value: 'pt-BR' },
-    ],
-    [],
-  );
-
-  const onSelect = React.useCallback(
-    (option: OptionType) => {
-      setLanguage(option.value as Language);
-      modal.dismiss();
-    },
-    [setLanguage, modal],
-  );
-
-  const selected = options.find(option => option.value === language);
 
   return (
-    <>
-      <Chip
-        testID="language-button"
-        label={selected?.value ?? 'en-US'}
-        onPress={modal.present}
-      />
-      <Options
-        ref={modal.ref}
-        options={options}
-        onSelect={onSelect}
-        value={language}
-      />
-    </>
+    <Toggle
+      testID="language-button"
+      accessibilityLabel={`Switch to ${nextLanguage(language)}`}
+      label={language === 'pt-BR' ? 'PT' : 'EN'}
+      onPress={() => setLanguage(nextLanguage(language))}
+    />
   );
 }
 
-type ChipProps = {
+type ToggleProps = {
   testID: string;
+  accessibilityLabel: string;
   label: string;
   onPress: () => void;
 };
 
-function Chip({ testID, label, onPress }: ChipProps) {
+function Toggle({ testID, accessibilityLabel, label, onPress }: ToggleProps) {
   return (
     <Pressable
       testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      className="rounded-full border border-neutral-300 px-3 py-1.5 dark:border-charcoal-700 dark:bg-charcoal-850"
+      className="size-10 items-center justify-center rounded-full border border-neutral-300 dark:border-charcoal-700 dark:bg-charcoal-850"
     >
-      <Text className="text-sm text-neutral-700 dark:text-neutral-200">
+      <Text className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
         {label}
       </Text>
     </Pressable>

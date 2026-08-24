@@ -1,6 +1,6 @@
 {
   "home": {
-    "description": "Everything is wired up and out of your way: file-based routing, a tested design system, Tailwind styling, translations, storage and a green CI pipeline. Delete this screen, add your first feature, and ship."
+    "description": "Delete this screen, add your first feature, and ship."
   },
   "preferences": {
     "english": "English (US)",
