@@ -16,6 +16,7 @@
     "web": "expo start --web",
     "xcode": "xed -b ios",
     "doctor": "npx expo-doctor@latest",
+    "env:use": "node scripts/use-env.js",
     "preinstall": "npx only-allow pnpm",
     "start:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview pnpm run start",
     "prebuild:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview STRICT_ENV_VALIDATION=1 pnpm run prebuild",

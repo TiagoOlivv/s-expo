@@ -74,20 +74,23 @@ A feature never imports another feature. Shared code moves up into `lib/` or `co
 
 `env.ts` recognises three environments — `development`, `preview` and `production` — and each one selects its own bundle id, package name and URL scheme.
 
-Expo only loads the standard dotenv files (`.env`, `.env.local`, `.env.[NODE_ENV]`, `.env.[NODE_ENV].local`), and the Expo docs recommend against switching environments through `NODE_ENV`. So the per-environment files here are **examples**, not files Expo reads. Copy the one you want onto `.env.local`, which overrides `.env` and is git-ignored:
+Expo only loads the standard dotenv files (`.env`, `.env.local`, `.env.[NODE_ENV]`, `.env.[NODE_ENV].local`), and the Expo docs recommend against switching environments through `NODE_ENV`. So the per-environment files here are **examples**, not files Expo reads. Pick one before your first run:
 
 ```bash
-cp .env.development.example .env.local   # or .env.preview.example / .env.production.example
+pnpm env:use development   # or preview / production
 pnpm start --clear
 ```
 
-| File | Purpose |
-| --- | --- |
-| `.env` | committed defaults, loaded on every run |
-| `.env.local` | your active environment, git-ignored |
-| `.env.development.example` | template for local development |
-| `.env.preview.example` | template for preview / QA |
-| `.env.production.example` | template for production values |
+That copies the matching example onto `.env.local`, which Expo loads with precedence.
+
+| File | Tracked | Purpose |
+| --- | --- | --- |
+| `.env.development.example` | yes | template for local development |
+| `.env.preview.example` | yes | template for preview / QA |
+| `.env.production.example` | yes | template for production values |
+| `.env.local` | no | the environment you are actually running |
+
+**No `.env` is committed, and `.gitignore` refuses every `.env*` that is not an `.example`.** A tracked env file is one careless edit away from putting a real credential in git history, and history is public the moment the repository is.
 
 EAS builds do not use these files: `eas.json` sets `EXPO_PUBLIC_APP_ENV` per build profile and reads the rest from the matching EAS environment.
 

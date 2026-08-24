@@ -25,5 +25,7 @@ docs/superpowers/
 expo-env.d.ts
 # @end expo-cli
 
-# Local environment overrides — copied from a .env.*.example file
-.env*.local
+# Environment files never belong in git. The .env.*.example templates are the
+# only ones tracked; `pnpm env:use <env>` copies one onto .env.local.
+.env*
+!.env*.example
