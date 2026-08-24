@@ -1,17 +1,5 @@
 {
-  "settings": {
-    "about": "Sobre",
-    "app_name": "Nome do app",
-    "english": "Inglês (EUA)",
-    "general": "Geral",
-    "language": "Idioma",
-    "portuguese": "Português (Brasil)",
-    "theme": {
-      "dark": "Escuro",
-      "light": "Claro",
-      "system": "Sistema",
-      "title": "Tema"
-    },
-    "version": "Versão"
+  "home": {
+    "description": "Este é o ponto de partida do seu app. Substitua esta tela pela sua primeira feature."
   }
 }

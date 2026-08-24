@@ -3,19 +3,5 @@ appId: ${APP_ID}
 - launchApp
 - assertVisible:
     id: home-title
-- assertVisible: General
-- assertVisible: Language
-- assertVisible: Theme
-- assertVisible: About
-- scrollUntilVisible:
-    element:
-      text: Typography
-- scrollUntilVisible:
-    element:
-      text: Colors
-- scrollUntilVisible:
-    element:
-      text: Buttons
-- scrollUntilVisible:
-    element:
-      text: Form
+- assertVisible:
+    id: home-description

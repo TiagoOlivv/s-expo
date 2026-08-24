@@ -1,17 +1,5 @@
 {
-  "settings": {
-    "about": "About",
-    "app_name": "App Name",
-    "english": "English (US)",
-    "general": "General",
-    "language": "Language",
-    "portuguese": "Portuguese (Brazil)",
-    "theme": {
-      "dark": "Dark",
-      "light": "Light",
-      "system": "System",
-      "title": "Theme"
-    },
-    "version": "Version"
+  "home": {
+    "description": "This is the starting point of your app. Replace this screen with your first feature."
   }
 }

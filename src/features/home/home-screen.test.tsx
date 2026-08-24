@@ -12,21 +12,9 @@ describe('homeScreen', () => {
     );
   });
 
-  it('shows the settings sections', () => {
+  it('shows the description below the title', () => {
     render(<HomeScreen />);
 
-    expect(screen.getByText('General')).toBeOnTheScreen();
-    expect(screen.getByText('About')).toBeOnTheScreen();
-    expect(screen.getByText('Language')).toBeOnTheScreen();
-    expect(screen.getByText('Theme')).toBeOnTheScreen();
-  });
-
-  it('shows the style guide sections', () => {
-    render(<HomeScreen />);
-
-    expect(screen.getByText('Typography')).toBeOnTheScreen();
-    expect(screen.getByText('Colors')).toBeOnTheScreen();
-    expect(screen.getByText('Buttons')).toBeOnTheScreen();
-    expect(screen.getByText('Form')).toBeOnTheScreen();
+    expect(screen.getByTestId('home-description')).toBeOnTheScreen();
   });
 });

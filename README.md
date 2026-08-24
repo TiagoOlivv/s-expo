@@ -45,7 +45,9 @@ Every change is written test-first.
 
 ## What ships
 
-A single route rendering one scrollable screen: a title built from the app name, the language and theme pickers, an about section, and the design-system showcase (typography, colors, buttons, form controls). There is no authentication and no tab bar.
+A single route rendering one screen: a title built from the app name plus `Starter`, and a one-line description. Nothing else. There is no authentication, no tab bar and no example feature — the first feature you add is the first feature in the app.
+
+The design system in `src/components/ui` stays fully intact and tested, and `docs/reference/removed-patterns.md` keeps the working code for data fetching, stores, forms and settings rows that this template used to ship, so those conventions can be restored deliberately rather than reinvented.
 
 ## Project structure
 
