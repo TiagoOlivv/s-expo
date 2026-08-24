@@ -24,3 +24,6 @@ docs/superpowers/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Local environment overrides — copied from a .env.*.example file
+.env*.local
