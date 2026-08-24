@@ -2,7 +2,7 @@
 
 Opinionated Expo template for building responsive, multi-platform apps (phone and tablet, iOS and Android).
 
-Derived from the [Obytes React Native starter](https://github.com/obytes/react-native-template-obytes) v9.0.0, then trimmed to a single reference feature and adapted to our own conventions.
+Derived from the [Obytes React Native starter](https://github.com/obytes/react-native-template-obytes) v9.0.0, then trimmed to a single scrollable start screen with no authentication.
 
 ## Stack
 
@@ -11,11 +11,10 @@ Derived from the [Obytes React Native starter](https://github.com/obytes/react-n
 | Runtime | Expo SDK 54, React Native 0.81.5, React 19.1 |
 | Routing | Expo Router 6 (file-based, typed routes) |
 | Styling | Uniwind + Tailwind CSS 4 (`className`, theme via CSS `@theme`) |
-| Server state | TanStack Query 5 + `react-query-kit` + axios |
+| Server state | TanStack Query 5 + axios |
 | Client state | Zustand 5 |
-| Forms | TanStack Form + Zod 4 |
 | Storage | react-native-mmkv 4 |
-| i18n | i18next + react-i18next (`en`, `pt-BR`) |
+| i18n | i18next + react-i18next — `en-US` (default) and `pt-BR` |
 | Unit tests | Jest + React Testing Library |
 | E2E | Maestro |
 | Lint & format | ESLint (`@antfu/eslint-config`, formatting via ESLint Stylistic — no Prettier) |
@@ -42,7 +41,11 @@ pnpm check-all        # all of the above + translation lint
 pnpm e2e-test         # maestro flows (requires a running emulator)
 ```
 
-Every change is written test-first. See `docs/` for the full conventions.
+Every change is written test-first.
+
+## What ships
+
+A single route rendering one scrollable screen: a title built from the app name, the language and theme pickers, an about section, and the design-system showcase (typography, colors, buttons, form controls). There is no authentication and no tab bar.
 
 ## Project structure
 
@@ -51,8 +54,8 @@ src/
 ├─ app/            # Expo Router routes — thin re-exports only
 ├─ features/       # one folder per domain: screen, components/, api.ts, store
 ├─ components/ui/  # design system
-├─ lib/            # infrastructure: api client, auth, i18n, storage, hooks
-└─ translations/   # locale JSON files
+├─ lib/            # infrastructure: api client, i18n, storage, hooks
+└─ translations/   # en-us.json, pt-br.json
 ```
 
 Dependency rule — imports only flow to the right:

@@ -1,15 +1,10 @@
 {
-  "home": {
-    "description": "Esta tela é o ponto de partida do seu app. Substitua pela sua primeira feature.",
-    "title": "Início"
-  },
   "settings": {
     "about": "Sobre",
     "app_name": "Nome do app",
-    "english": "Inglês",
+    "english": "Inglês (EUA)",
     "general": "Geral",
     "language": "Idioma",
-    "logout": "Sair",
     "portuguese": "Português (Brasil)",
     "theme": {
       "dark": "Escuro",
@@ -17,10 +12,6 @@
       "system": "Sistema",
       "title": "Tema"
     },
-    "title": "Configurações",
     "version": "Versão"
-  },
-  "style_guide": {
-    "title": "Style Guide"
   }
 }
