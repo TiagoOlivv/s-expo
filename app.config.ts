@@ -72,7 +72,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         image: './assets/splash-icon.png',
         resizeMode: 'contain',
         backgroundColor: '#f0f0f0',
-        imageWidth: 449,
+        // Points, not pixels, and the same number on every device. The narrowest
+        // phone this template targets is the iPhone SE at 320pt wide; the
+        // iPhone 17e is 390pt. The artwork is square, so the value is its height
+        // too - 200 leaves margin on the smallest screen and still reads on a
+        // tablet, which is what Expo's own default settled on.
+        imageWidth: 200,
       },
     ],
     [
