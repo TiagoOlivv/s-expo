@@ -2,6 +2,7 @@
 import type { TextProps, TextStyle } from 'react-native';
 import type { TxKeyPath } from '@/lib/i18n';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { I18nManager, Text as NNText, StyleSheet } from 'react-native';
 
 import { twMerge } from 'tailwind-merge';
@@ -19,6 +20,12 @@ export function Text({
   children,
   ...props
 }: Props) {
+  // `translate` is a plain memoized function. It returns the right string for
+  // the active language, but it has no way to tell React that the string
+  // changed, so a `tx` would keep rendering the language the screen mounted
+  // with. Subscribing to i18next here is what makes the switch take effect.
+  useTranslation();
+
   const textStyle = React.useMemo(
     () =>
       twMerge(

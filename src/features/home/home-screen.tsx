@@ -2,7 +2,6 @@ import Env from 'env';
 import * as React from 'react';
 
 import { FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
-import { translate } from '@/lib/i18n';
 import { PreferencesBar } from './components/preferences-bar';
 
 export function HomeScreen() {
@@ -21,10 +20,9 @@ export function HomeScreen() {
           </Text>
           <Text
             testID="home-description"
+            tx="home.description"
             className="text-center text-base/6 text-neutral-600 dark:text-neutral-400"
-          >
-            {translate('home.description')}
-          </Text>
+          />
         </View>
       </SafeAreaView>
     </>
