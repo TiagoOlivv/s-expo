@@ -2,7 +2,9 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "search.exclude": {
-    "yarn.lock": true
+    "pnpm-lock.yaml": true,
+    "dist": true,
+    "coverage": true
   },
 
   // Disable Prettier completely
@@ -54,11 +56,15 @@
   ],
 
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["Flashlist", "Lato"],
+  "cSpell.words": ["Uniwind", "Maestro", "MMKV", "myapptemplate", "commitlint", "Zustand", "antfu"],
   "i18n-ally.localesPaths": ["src/translations/"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.disabled": false, // make sure to disable i18n-ally in your global setting and only enable it for such projects
+  // Tailwind 4 keeps its theme in CSS, so IntelliSense has to be pointed at it
+  "tailwindCSS.experimental.configFile": "src/global.css",
   "tailwindCSS.experimental.classRegex": [
     ["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ]
+  ],
+  // Use the TypeScript that ships with the project (6.x), not the editor's own
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

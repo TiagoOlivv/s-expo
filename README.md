@@ -32,6 +32,14 @@ pnpm android          # run on Android emulator
 
 This template uses an Expo custom dev client, so Expo Go is not supported. Build and install the dev client first.
 
+## Editor
+
+`.vscode/` is configured for this project: ESLint fixes on save, Prettier explicitly disabled, Tailwind IntelliSense pointed at `src/global.css` (Tailwind 4 keeps its theme in CSS), and i18n-ally pointed at `src/translations/`.
+
+Install the recommended extensions when prompted, and accept the prompt to use the workspace TypeScript — the project is on TypeScript 6 and the editor's bundled version may be older.
+
+`project.code-snippets` carries prefixes that follow the conventions: `screen`, `route`, `comp`, `test`, `store`, `useq`, `useqv`, `usem`, `useiq`, `nav`.
+
 ## Quality gates
 
 ```bash
@@ -103,7 +111,7 @@ Never put a real secret in an `EXPO_PUBLIC_` variable — those are inlined in p
 
 - `app.config.ts` — set `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` (both are intentionally empty)
 - `env.ts` — rename `NAME`, `BUNDLE_IDS`, `PACKAGES`, `SCHEMES`
-- `.env` — point `EXPO_PUBLIC_API_URL` at a real API
+- `.env.*.example` — point `EXPO_PUBLIC_API_URL` at a real API, then `pnpm env:use <environment>`
 
 ## Git workflow
 

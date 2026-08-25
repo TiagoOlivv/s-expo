@@ -14,6 +14,7 @@ How this template is put together and the rules that keep it that way. Everythin
 | Change colours or the theme | [design-system/theming.md](./design-system/theming.md) |
 | Understand a CI failure | [ci/workflows.md](./ci/workflows.md) |
 | Move to the next Expo SDK | [guides/upgrading-sdk.md](./guides/upgrading-sdk.md) |
+| Set up your editor | [the README](../README.md#editor) |
 
 ## Contents
 

@@ -1,16 +1,15 @@
 {
+  // Prettier is deliberately absent: ESLint formats this project through
+  // ESLint Stylistic, and settings.json disables the Prettier extension.
   "recommendations": [
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "lokalise.i18n-ally",
     "yoavbls.pretty-ts-errors",
     "mikestead.dotenv",
     "eamodio.gitlens",
     "streetsidesoftware.code-spell-checker",
     "formulahendry.auto-close-tag",
-    "formulahendry.auto-rename-tag",
-    "bradlc.vscode-tailwindcss",
-    "lokalise.i18n-ally",
-    "wesbos.theme-cobalt2",
-    "ChakrounAnas.turbo-console-log"
+    "formulahendry.auto-rename-tag"
   ]
 }
