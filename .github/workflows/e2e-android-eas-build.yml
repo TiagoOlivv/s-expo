@@ -32,7 +32,7 @@ jobs:
         run: wget ${{ github.event.inputs.apk-url }} -O ./app-release.apk
 
       - name: Upload Test APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-apk
           path: ./app-release.apk
@@ -41,6 +41,14 @@ jobs:
     name: E2E Tests EAS Build Android (Maestro + Github Action)
     needs: download-eas-apk
     runs-on: ubuntu-latest
+
+    # The emulator is described once, here, because the cache key is built from
+    # these values. A hardcoded key survives a change to the API level or the
+    # profile and hands back a snapshot of the old device, which then boots as
+    # something the flows were never written against.
+    env:
+      EMULATOR_API_LEVEL: 29
+      EMULATOR_PROFILE: Nexus 6
 
     steps:
       # ubuntu-latest ships with roughly 14 GB free, and an Android build plus an
@@ -64,7 +72,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: 📦 Checkout project repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -72,53 +80,53 @@ jobs:
         run: npm run install-maestro # # We use npm because we don't need to install deps again
 
       - name: Download Test APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: test-apk
           path: ${{ github.workspace }}
 
       - name: Gradle cache
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: AVD cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-cache
+          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_PROFILE }}
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           cores: 2
           ram-size: 4096M
-          profile: Nexus 6
+          profile: ${{ env.EMULATOR_PROFILE }}
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run tests with Maestro
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           cores: 2
           ram-size: 4096M
-          profile: Nexus 6
+          profile: ${{ env.EMULATOR_PROFILE }}
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
             $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-test-logs
           path: ~/.maestro/tests/**/*
@@ -128,7 +136,7 @@ jobs:
           include-hidden-files: true
 
       - name: Store tests result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e_android_report
           path: |
