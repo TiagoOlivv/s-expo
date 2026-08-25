@@ -33,7 +33,9 @@ A feature folder contains: `<name>-screen.tsx`, optional `components/`, optional
 
 ## Documentation
 
-`docs/` holds the full conventions. Read [`docs/README.md`](docs/README.md) before a non-trivial change; [`docs/guides/add-a-feature.md`](docs/guides/add-a-feature.md) is the end-to-end recipe.
+**Read [`docs/workflow.md`](docs/workflow.md) before changing anything.** It is the development loop: how to classify a change, branch, write the failing test first, verify, and open a pull request. [`docs/guides/add-a-feature.md`](docs/guides/add-a-feature.md) is the worked example, and [`docs/README.md`](docs/README.md) indexes the rest.
+
+Two rules that have already been broken here: declare every package you import, even when `node-linker=hoisted` makes a transitive one resolve; and never report a check as passing unless you ran it — a green `tsc` on code the bundler rejects proves nothing.
 
 ## Rules
 

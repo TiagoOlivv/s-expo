@@ -13,9 +13,21 @@ src/lib/            infrastructure what it runs on
 
 Imports flow in one direction only:
 
+```mermaid
+flowchart LR
+    APP["src/app/<br/>routes"] --> FEAT["src/features/<br/>domain"]
+    FEAT --> UI["src/components/ui/<br/>design system"]
+    UI --> LIB["src/lib/<br/>infrastructure"]
+    APP --> UI
+    APP --> LIB
+    FEAT --> LIB
+
+    FEAT -.->|"never"| FEAT2["another feature"]
+    LIB -.->|"never"| FEAT
+    UI -.->|"never"| FEAT
 ```
-app/  →  features/  →  components/ui/  →  lib/
-```
+
+Solid arrows are allowed. Dotted arrows are the imports that break the architecture.
 
 - `app/` may import anything.
 - `features/` may import `components/ui/` and `lib/`.

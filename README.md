@@ -52,7 +52,7 @@ pnpm check-all        # all of the above + translation lint
 pnpm e2e-test         # maestro flows (requires a running emulator)
 ```
 
-Every change is written test-first. The conventions live in [`docs/`](./docs/README.md).
+Every change is written test-first. **[`docs/workflow.md`](./docs/workflow.md) is the development loop** — how a change goes from an idea to a merge — and the rest of the conventions live in [`docs/`](./docs/README.md).
 
 ## CI/CD
 
