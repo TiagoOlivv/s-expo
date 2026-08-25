@@ -65,7 +65,7 @@ runs:
       shell: bash
 
     - name: 📦 Setup Expo and EAS
-      uses: expo/expo-github-action@v8
+      uses: expo/expo-github-action@v9
       with:
         eas-version: latest
         token: ${{ inputs.EXPO_TOKEN }}

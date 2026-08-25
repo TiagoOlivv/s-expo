@@ -4,8 +4,11 @@
 
 ```
 .maestro/
-├─ config.yaml        which flows run, and in what order
-└─ app/home.yaml      the start screen
+├─ config.yaml            which flows run, and in what order
+└─ app/
+   ├─ home.yaml           the start screen renders and every control is reachable
+   ├─ language.yaml       switching the language re-renders the screen in place
+   └─ theme.yaml          switching the theme flips the toggle in place
 ```
 
 ## Running locally
@@ -41,6 +44,33 @@ Target `testID`s, not visible text. Text moves with translation — a flow asser
 
 `scrollUntilVisible` is the right tool for content below the fold; a bare `assertVisible` fails on an element that exists but is off-screen.
 
+### Persisted state, and why `clearState` is not used
+
+The theme and the language live in MMKV, so they survive a restart and a flow cannot assume the state it starts in. The obvious fix is `clearState: true` — and on a development build it is the wrong one. It also wipes the dev client's stored server URL, so the app opens the launcher instead of the screen and every assertion after `launchApp` fails for a reason that has nothing to do with the flow.
+
+`language.yaml` and `theme.yaml` normalise instead, with a conditional `runFlow` that reads the toggle's own accessibility label:
+
+```yaml
+- runFlow:
+    when:
+      visible:
+        id: theme-button
+        text: Switch to dark theme
+    commands:
+      - tapOn:
+          id: theme-button
+```
+
+Each toggle is labelled with the value it would switch to, which makes that label a reliable read of the current state. Both flows also restore what they found, so the order in `config.yaml` carries no hidden coupling.
+
+### What an `accessibilityLabel` hides
+
+An `accessibilityLabel` on a `Pressable` makes iOS collapse its subtree into a single accessibility element. The child `Text` never reaches the hierarchy, so the emoji inside the theme toggle — and the `EN`/`PT` inside the language one — cannot be asserted at all; `assertVisible: "🌙"` fails against a perfectly working button.
+
+Assert the label instead. It and the emoji are derived from the same value, so it is a faithful read of it. What no Maestro assertion covers is the colours themselves — only a screenshot diff would, and that is not set up here.
+
+`maestro hierarchy`, run against the booted app, is what settles questions like this. It prints exactly what the flow can see, which is rarely all of what the screen shows.
+
 ## In CI
 
 Two workflows, both free, neither needing a secret:
@@ -63,4 +93,4 @@ Maestro Cloud is deliberately not used. It is a good product and it is paid; bot
 
 ## Keeping flows honest
 
-The flow in this repository has been verified statically — every `testID` it references exists — but not executed, because this environment has no JVM. Treat it as unproven until it has run green once. A flow that has never passed is a liability: when it eventually fails you will not know whether it found a bug or was always broken.
+All three flows have run green against an iPhone 17e simulator, twice in a row from a cold start. A flow that has never passed is a liability: when it eventually fails you will not know whether it found a bug or was always broken — so run a new one before committing it, and do not commit one that has only been read.

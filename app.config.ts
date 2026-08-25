@@ -57,7 +57,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#E6F4FE',
+      backgroundColor: '#f0f0f0',
     },
     package: Env.EXPO_PUBLIC_PACKAGE,
   },
@@ -69,9 +69,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#208AEF',
         image: './assets/splash-icon.png',
-        imageWidth: 76,
+        resizeMode: 'contain',
+        backgroundColor: '#f0f0f0',
+        // Points, not pixels, and the same number on every device. The narrowest
+        // phone this template targets is the iPhone SE at 320pt wide; the
+        // iPhone 17e is 390pt. The artwork is square, so the value is its height
+        // too - 200 leaves margin on the smallest screen and still reads on a
+        // tablet, which is what Expo's own default settled on.
+        imageWidth: 200,
       },
     ],
     [

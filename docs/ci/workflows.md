@@ -111,6 +111,24 @@ Nothing here uses `MAESTRO_CLOUD_API_KEY`. Maestro Cloud is paid and this templa
 
 `APP_ENV` in a workflow must name a profile that exists in `eas.json`: `development`, `preview`, `production` or `simulator`. The upstream template used `staging`, which does not exist here — that mismatch made `pnpm prebuild:staging` fail and is worth remembering if you copy a workflow from elsewhere.
 
+## The Node version is pinned for a reason
+
+`.github/actions/setup-node-pnpm-install` asks for **Node 24**. Do not move it to 22.
+
+`pnpm prebuild` fails there, on Linux, and only there:
+
+```
+Error: [android.dangerous]: withAndroidDangerousBaseMod:
+       Could not find MIME for Buffer <null>
+    at Jimp.parseBitmap (node_modules/jimp-compact/dist/jimp.js)
+```
+
+It was isolated on this repository with one variable — the same tree and the same actions, changing only `node-version`. 20 passes, 22 fails after twelve seconds, 24 passes. macOS is unaffected: the same prebuild runs clean there on Node 22.
+
+The failure comes from `@expo/image-utils`, which pins `jimp-compact@0.16.1`. That pin is in the latest published version, so there is nothing upstream to upgrade to. Every development prebuild passes through it, because `app-icon-badge` in `app.config.ts` badges the icons for any environment that is not production.
+
+Node 20 also works and is out of support, which is why 24 is the one written down.
+
 ## Running a check locally
 
 Everything the gate does, `pnpm check-all` does:

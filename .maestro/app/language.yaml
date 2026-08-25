@@ -1,0 +1,40 @@
+appId: com.myapptemplate.development
+---
+# Switching the language re-renders the screen in place.
+#
+# The language survives a restart in MMKV, so the flow cannot assume where it
+# starts. It normalises first instead. clearState would do the job on a release
+# build, but on a development build it also wipes the dev client's stored server
+# URL and the app opens the launcher instead of the screen.
+#
+# Each toggle is labelled with the value it would switch to, which makes that
+# label a reliable read of the current state.
+- launchApp
+
+- runFlow:
+    when:
+      visible:
+        id: language-button
+        text: Switch to en-US
+    commands:
+      - tapOn:
+          id: language-button
+
+- assertVisible:
+    id: home-description
+    text: Delete this screen, add your first feature, and ship.
+
+- tapOn:
+    id: language-button
+
+- assertVisible:
+    id: home-description
+    text: Apague esta tela, escreva sua primeira feature e publique.
+
+# Back to en-US, so the flow leaves the app as it found it.
+- tapOn:
+    id: language-button
+
+- assertVisible:
+    id: home-description
+    text: Delete this screen, add your first feature, and ship.

@@ -32,7 +32,7 @@ jobs:
         run: wget ${{ github.event.inputs.apk-url }} -O ./app-release.apk
 
       - name: Upload Test APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: test-apk
           path: ./app-release.apk
@@ -40,11 +40,39 @@ jobs:
   test-android:
     name: E2E Tests EAS Build Android (Maestro + Github Action)
     needs: download-eas-apk
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
+
+    # The emulator is described once, here, because the cache key is built from
+    # these values. A hardcoded key survives a change to the API level or the
+    # profile and hands back a snapshot of the old device, which then boots as
+    # something the flows were never written against.
+    env:
+      EMULATOR_API_LEVEL: 29
+      EMULATOR_PROFILE: Nexus 6
 
     steps:
+      # ubuntu-latest ships with roughly 14 GB free, and an Android build plus an
+      # emulator system image does not fit - the first run here died 39 minutes
+      # in with "No space left on device". None of what is removed below is used
+      # by this workflow. The Android SDK and its NDK are deliberately left
+      # alone: some Expo modules still compile from source against them.
+      - name: 🧹 Free up disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
+      # The emulator needs KVM, and the runner does not hand it over by default.
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: 📦 Checkout project repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -52,59 +80,63 @@ jobs:
         run: npm run install-maestro # # We use npm because we don't need to install deps again
 
       - name: Download Test APK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           name: test-apk
           path: ${{ github.workspace }}
 
       - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v5
 
       - name: AVD cache
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-cache
+          key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_PROFILE }}
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           cores: 2
           ram-size: 4096M
-          profile: Nexus 6
+          profile: ${{ env.EMULATOR_PROFILE }}
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run tests with Maestro
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ env.EMULATOR_API_LEVEL }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           cores: 2
           ram-size: 4096M
-          profile: Nexus 6
+          profile: ${{ env.EMULATOR_PROFILE }}
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
             $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-test-logs
           path: ~/.maestro/tests/**/*
+          # upload-artifact stopped including dotfiles in v4.4. Maestro writes
+          # some of its debug output as hidden files, and they are exactly the
+          # ones worth having when a flow fails.
+          include-hidden-files: true
 
       - name: Store tests result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: e2e_android_report
           path: |
