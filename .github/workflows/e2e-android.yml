@@ -38,6 +38,11 @@ jobs:
         uses: ./.github/actions/setup-jdk-generate-apk
         with:
           APP_ENV: development
+          # Set the repository variable to point the build at a real backend.
+          # The fallback is a placeholder, which is all the E2E flows need: the
+          # start screen makes no request, and EXPO_PUBLIC_ values ship in clear
+          # text inside the binary, so no secret belongs here anyway.
+          EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL || 'https://api.dev.example.com/' }}
 
       - name: Upload Test APK
         uses: actions/upload-artifact@v4
