@@ -10,7 +10,8 @@
 | `focus-aware-status-bar.tsx` | status bar styling that only applies while the screen is focused |
 | `use-theme-config.tsx` | maps the Uniwind theme onto a navigation theme |
 | `colors.js` | the palette as JavaScript values |
-| `index.tsx` | the barrel, plus `View`, `Pressable`, `ScrollView`, `SafeAreaView` re-exported |
+| `safe-area-view.tsx` | `SafeAreaView` wrapped so `className` works on native |
+| `index.tsx` | the barrel, plus `View`, `Pressable`, `ScrollView` re-exported |
 
 The kit is deliberately small. This template was trimmed to what the screen actually renders; the components that were removed — button, input, checkbox, select, modal — are preserved verbatim in [../reference/removed-patterns.md](../reference/removed-patterns.md). Copy one back when you need it rather than writing it again.
 
@@ -21,6 +22,36 @@ import { Pressable, Text, View } from '@/components/ui';
 ```
 
 One import site for the whole visual layer. When `View` eventually needs to become a wrapper, it changes here and no call site moves.
+
+## Third-party components need `withUniwind`
+
+Uniwind adds `className` support through its Metro resolver, and that resolver only
+rewrites imports coming from `react-native`. Everything else —
+`react-native-safe-area-context`, `react-native-gesture-handler`, any UI library —
+receives `className` as a prop it does not recognise, and drops it.
+
+The failure is quiet and asymmetric. Web still styles the element, because
+`className` lands on a real DOM node where Tailwind's CSS applies. Native renders
+unstyled. The bug therefore survives every check that runs on a machine and shows
+up only on a device.
+
+Wrap the component once, in its own file under `src/components/ui/`:
+
+```tsx
+import { SafeAreaView as ContextSafeAreaView } from 'react-native-safe-area-context';
+import { withUniwind } from 'uniwind';
+
+export const SafeAreaView = withUniwind(ContextSafeAreaView);
+```
+
+`withUniwind` maps `className` onto `style`, and `<prop>ClassName` onto
+`<prop>Style`. `safe-area-view.tsx` is the reference.
+
+Jest cannot catch this. It runs on the `jest-expo` preset with no Metro resolver,
+so no `className` becomes a style there either — including for the components that
+do work in the app. What a test can pin is that the export is wrapped rather than
+passed straight through; `safe-area-view.test.tsx` does exactly that. Running the
+app is the only real check.
 
 ## Adding a component
 
