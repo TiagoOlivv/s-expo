@@ -24,3 +24,8 @@ docs/superpowers/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Environment files never belong in git. The .env.*.example templates are the
+# only ones tracked; `pnpm env:use <env>` copies one onto .env.local.
+.env*
+!.env*.example

@@ -1,0 +1,14 @@
+{
+  "home": {
+    "description": "Apague esta tela, escreva sua primeira feature e publique."
+  },
+  "preferences": {
+    "english": "English (US)",
+    "portuguese": "Português (Brasil)",
+    "theme": {
+      "dark": "Escuro",
+      "light": "Claro",
+      "system": "Sistema"
+    }
+  }
+}

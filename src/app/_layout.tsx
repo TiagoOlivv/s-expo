@@ -1,5 +1,4 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-
+import type { ViewProps } from 'react-native';
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -9,7 +8,6 @@ import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useThemeConfig } from '@/components/ui/use-theme-config';
-import { hydrateAuth } from '@/features/auth/use-auth-store';
 
 import { APIProvider } from '@/lib/api';
 import { loadSelectedTheme } from '@/lib/hooks/use-selected-theme';
@@ -20,10 +18,9 @@ export { ErrorBoundary } from 'expo-router';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const unstable_settings = {
-  initialRouteName: '(app)',
+  initialRouteName: 'index',
 };
 
-hydrateAuth();
 loadSelectedTheme();
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,21 +31,37 @@ SplashScreen.setOptions({
 });
 
 export default function RootLayout() {
+  const hasHiddenSplash = React.useRef(false);
+
+  const onLayoutRootView = React.useCallback(() => {
+    if (hasHiddenSplash.current) {
+      return;
+    }
+
+    hasHiddenSplash.current = true;
+    SplashScreen.hide();
+  }, []);
+
   return (
-    <Providers>
-      <Stack>
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+    <Providers onLayout={onLayoutRootView}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
       </Stack>
     </Providers>
   );
 }
 
-function Providers({ children }: { children: React.ReactNode }) {
+function Providers({
+  children,
+  onLayout,
+}: {
+  children: React.ReactNode;
+  onLayout: ViewProps['onLayout'];
+}) {
   const theme = useThemeConfig();
   return (
     <GestureHandlerRootView
+      onLayout={onLayout}
       style={styles.container}
       // eslint-disable-next-line better-tailwindcss/no-unknown-classes
       className={theme.dark ? `dark` : undefined}
@@ -56,10 +69,8 @@ function Providers({ children }: { children: React.ReactNode }) {
       <KeyboardProvider>
         <ThemeProvider value={theme}>
           <APIProvider>
-            <BottomSheetModalProvider>
-              {children}
-              <FlashMessage position="top" />
-            </BottomSheetModalProvider>
+            {children}
+            <FlashMessage position="top" />
           </APIProvider>
         </ThemeProvider>
       </KeyboardProvider>

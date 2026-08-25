@@ -12,8 +12,6 @@ const envSchema = z.object({
   EXPO_PUBLIC_VERSION: z.string(),
   EXPO_PUBLIC_API_URL: z.string().url(),
   EXPO_PUBLIC_ASSOCIATED_DOMAIN: z.string().url().optional(),
-  EXPO_PUBLIC_VAR_NUMBER: z.number(),
-  EXPO_PUBLIC_VAR_BOOL: z.boolean(),
 
   // only available for app.config.ts usage
   APP_BUILD_ONLY_VAR: z.string().optional(),
@@ -24,15 +22,15 @@ const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV
   ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'com.my-app-template.development',
-  preview: 'com.my-app-template.preview',
-  production: 'com.my-app-template',
+  development: 'com.myapptemplate.development',
+  preview: 'com.myapptemplate.preview',
+  production: 'com.myapptemplate',
 } as const;
 
 const PACKAGES = {
-  development: 'com.my-app-template.development',
-  preview: 'com.my-app-template.preview',
-  production: 'com.my-app-template',
+  development: 'com.myapptemplate.development',
+  preview: 'com.myapptemplate.preview',
+  production: 'com.myapptemplate',
 } as const;
 
 const SCHEMES = {
@@ -41,7 +39,7 @@ const SCHEMES = {
   production: 'my-app-template',
 } as const;
 
-const NAME = 'my-app-template';
+const NAME = 'MyAppTemplate';
 
 // Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';
@@ -56,8 +54,6 @@ const _env: z.infer<typeof envSchema> = {
   EXPO_PUBLIC_VERSION: packageJSON.version,
   EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL ?? '',
   EXPO_PUBLIC_ASSOCIATED_DOMAIN: process.env.EXPO_PUBLIC_ASSOCIATED_DOMAIN,
-  EXPO_PUBLIC_VAR_NUMBER: Number(process.env.EXPO_PUBLIC_VAR_NUMBER ?? 0),
-  EXPO_PUBLIC_VAR_BOOL: process.env.EXPO_PUBLIC_VAR_BOOL === 'true',
   APP_BUILD_ONLY_VAR: process.env.APP_BUILD_ONLY_VAR,
 };
 

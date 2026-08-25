@@ -16,6 +16,7 @@
     "web": "expo start --web",
     "xcode": "xed -b ios",
     "doctor": "npx expo-doctor@latest",
+    "env:use": "node scripts/use-env.js",
     "preinstall": "npx only-allow pnpm",
     "start:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview pnpm run start",
     "prebuild:preview": "cross-env EXPO_PUBLIC_APP_ENV=preview STRICT_ENV_VALIDATION=1 pnpm run prebuild",
@@ -43,7 +44,7 @@
     "test:ci": "pnpm run test --coverage",
     "test:watch": "pnpm run test --watch",
     "install-maestro": "curl -Ls 'https://get.maestro.mobile.dev' | bash",
-    "e2e-test": "maestro test .maestro/ -e APP_ID=com.obytes.development"
+    "e2e-test": "maestro test .maestro/ -e APP_ID=com.myapptemplate.development"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

@@ -1,14 +1,14 @@
 # 🔗 Links:
 # Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/e2e-android-eas-build.yml
-# End-to-end testing: https://starter.obytes.com/testing/end-to-end-testing/
 
 # ✍️ Description:
-# This workflow is used to run end-to-end tests for EAS build on Android.
-# It uses Maestro Cloud to run tests on Android emulator.
-# It downloads the APK from EAS build and triggers the tests on Maestro Cloud with the downloaded APK.
-
-# 🚨 GITHUB SECRETS REQUIRED:
-# MAESTRO_CLOUD_API_KEY: API key for Maestro Cloud. You can get it from https://cloud.mobile.dev/ci-integration/github-actions#add-your-api-key-secret
+# Runs the Maestro end-to-end flows against an APK produced by EAS Build.
+# Trigger it by hand from the Actions tab and paste the APK URL that EAS
+# printed at the end of the build.
+#
+# Maestro runs on a GitHub-hosted Android emulator, not on Maestro Cloud, so
+# this workflow needs no secret. It complements e2e-android.yml, which builds
+# the APK with Gradle inside CI instead of pulling one from EAS.
 
 name: E2E Tests EAS Build Android (Maestro + Github Action)
 
@@ -94,7 +94,7 @@ jobs:
           profile: Nexus 6
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
-            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.obytes.staging  --format junit
+            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.myapptemplate.preview  --format junit
 
       - name: Upload artifacts
         if: always()

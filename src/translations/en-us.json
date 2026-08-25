@@ -1,0 +1,14 @@
+{
+  "home": {
+    "description": "Delete this screen, add your first feature, and ship."
+  },
+  "preferences": {
+    "english": "English (US)",
+    "portuguese": "Português (Brasil)",
+    "theme": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    }
+  }
+}
