@@ -26,10 +26,14 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 
 | Workflow | Trigger | Needs |
 | --- | --- | --- |
-| `eas-build-qa.yml` | manual | `EXPO_TOKEN` |
-| `eas-build-prod.yml` | manual | `EXPO_TOKEN` |
-| `new-app-version.yml` | manual | `GH_TOKEN`, optional |
+| `new-app-version.yml` | manual: patch, minor or major | `GH_TOKEN`, optional |
 | `new-github-release.yml` | a pushed tag | — |
+| `eas-build-qa.yml` | a published release, or manual | `EXPO_TOKEN` |
+| `eas-build-prod.yml` | manual only | `EXPO_TOKEN` |
+
+Those four form a chain: *New App Version* bumps the version and pushes a tag, the tag publishes a GitHub release, and the published release starts the QA build. Production stays manual and outside the chain, so nothing reaches a store without someone deciding it should.
+
+The chain has one failure mode that looks like nothing happening at all. A push made with the automatic `GITHUB_TOKEN` does not trigger other workflows, so without a `GH_TOKEN` the tag lands and *New GitHub Release* never fires.
 
 ## Secrets
 
