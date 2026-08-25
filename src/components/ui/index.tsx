@@ -7,6 +7,7 @@ export * from './text';
 // export base components from react-native
 export {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   TouchableOpacity,

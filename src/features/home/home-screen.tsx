@@ -2,6 +2,7 @@ import Env from 'env';
 import * as React from 'react';
 
 import { FocusAwareStatusBar, SafeAreaView, Text, View } from '@/components/ui';
+import { GithubProfile } from './components/github-profile';
 import { PreferencesBar } from './components/preferences-bar';
 
 export function HomeScreen() {
@@ -12,6 +13,8 @@ export function HomeScreen() {
         <PreferencesBar />
 
         <View className="flex-1 items-center justify-center gap-4 px-6">
+          <GithubProfile />
+
           <Text
             testID="home-title"
             className="text-center text-2xl font-bold"

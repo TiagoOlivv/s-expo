@@ -11,6 +11,16 @@ appId: com.myapptemplate.development
 # comment in either one for why clearState is not used.
 - launchApp
 
+# The avatar is fetched from github.com. Its element is in the hierarchy either
+# way - what a failed request costs is the picture, not the node - so this
+# assertion says the screen wired it up, not that the network answered.
+- assertVisible:
+    id: home-avatar
+
+- assertVisible:
+    id: home-handle
+    text: '@tiagoolivv'
+
 - assertVisible:
     id: home-title
     text: MyAppTemplate Starter

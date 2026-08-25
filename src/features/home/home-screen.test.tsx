@@ -34,6 +34,13 @@ describe('homeScreen', () => {
     expect(screen.getByTestId('language-button')).toBeOnTheScreen();
   });
 
+  it('introduces the GitHub profile above the title', () => {
+    setup(<HomeScreen />);
+
+    expect(screen.getByTestId('home-avatar')).toBeOnTheScreen();
+    expect(screen.getByTestId('home-handle')).toBeOnTheScreen();
+  });
+
   it('re-renders the description when the language is toggled', async () => {
     const { user } = setup(<HomeScreen />);
 
