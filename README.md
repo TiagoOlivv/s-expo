@@ -71,7 +71,7 @@ flowchart TD
         P2["Type Check"]
         P3["Tests"]
         P4["Expo Doctor<br/>(only if deps changed)"]
-        P5["E2E Android<br/>(only with the label)"]
+        P5["E2E Android<br/>Maestro on an emulator"]
     end
 
     PR --> P1 & P2 & P3 & P4 & P5
@@ -120,9 +120,12 @@ Husky runs these on `pre-commit` and `commit-msg`. A commit that would fail CI n
 | `type-check.yml` | `tsc --noemit`, annotated inline | yes |
 | `test.yml` | `jest`, with the summary posted as a comment | yes |
 | `expo-doctor.yml` | only when `package.json` or `pnpm-lock.yaml` changed | yes, when it runs |
-| `e2e-android.yml` | Maestro on an emulator — **only** if the PR carries the `android-test-github` label | opt-in |
+| `e2e-android.yml` | Maestro on a GitHub-hosted emulator | yes |
+| `.eas/workflows/e2e-test-android.yml` | EAS builds the APK, EAS runs Maestro on it | yes, once EAS is configured |
 
-E2E is opt-in because a full Android build plus emulator run costs roughly fifteen minutes. Add the label when a change touches navigation, startup or anything a unit test cannot reach.
+Both E2E paths run on every pull request. That is not free: the GitHub one builds an APK and boots an emulator, roughly fifteen minutes of runner time, and on a **private** repository those minutes are metered. The EAS one spends build credits.
+
+If that becomes a problem, the cheapest change is to gate them again — `pull_request_labeled` on the EAS side, an `if:` on the label for the GitHub one.
 
 ### 3 · main
 

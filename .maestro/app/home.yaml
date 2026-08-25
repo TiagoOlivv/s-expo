@@ -1,4 +1,8 @@
-appId: ${APP_ID}
+# The app id is fixed here rather than injected, because the EAS maestro job
+# does not pass -e APP_ID. Every runner - local, GitHub Actions and EAS - builds
+# the development variant so this one value is correct everywhere. Change it
+# together with BUNDLE_IDS/PACKAGES in env.ts.
+appId: com.myapptemplate.development
 ---
 - launchApp
 - assertVisible:

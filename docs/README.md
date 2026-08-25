@@ -18,10 +18,12 @@ How this template is put together and the rules that keep it that way. Everythin
 | Understand a CI failure | [ci/workflows.md](./ci/workflows.md) |
 | Move to the next Expo SDK | [guides/upgrading-sdk.md](./guides/upgrading-sdk.md) |
 | Set up your editor | [the README](../README.md#editor) |
+| Work on this with an AI agent | [ai-tooling.md](./ai-tooling.md) |
 
 ## Contents
 
 - **[workflow.md](./workflow.md)** — the development loop, from classifying a change to merging it
+- **[ai-tooling.md](./ai-tooling.md)** — MCP servers and skills worth using on this project
 - **architecture/** — [overview](./architecture/overview.md), [project structure](./architecture/project-structure.md), [data flow](./architecture/data-flow.md)
 - **conventions/** — [naming](./conventions/naming.md), [imports](./conventions/imports.md), [typescript](./conventions/typescript.md), [git](./conventions/git.md)
 - **design-system/** — [theming](./design-system/theming.md), [components](./design-system/components.md)

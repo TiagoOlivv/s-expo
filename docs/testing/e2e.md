@@ -21,7 +21,7 @@ Three things have to be in place first, and none of them is optional:
 2. **A built app installed on a simulator or emulator** — `pnpm ios` or `pnpm android`. Maestro drives an installed binary; it does not build one.
 3. **A booted device**, with only one running. Maestro picks the connected device and gets confused by several.
 
-The app id comes from the script: `-e APP_ID=com.myapptemplate.development`. It has to match the environment you built. Building `preview` and running the flow against the `development` id fails with a launch error that looks nothing like the real cause.
+The flow declares the app id itself, so build the **development** variant. Building `preview` and running the flow fails with a launch error that looks nothing like its real cause.
 
 ## Writing a flow
 
@@ -47,10 +47,17 @@ Two workflows, both free, neither needing a secret:
 
 | Workflow | APK from | Trigger |
 | --- | --- | --- |
-| `e2e-android.yml` | Gradle, built in CI | pull request labelled `android-test-github` |
+| `e2e-android.yml` | Gradle, inside GitHub Actions | every pull request to `main` |
+| `.eas/workflows/e2e-test-android.yml` | EAS Build, `e2e-test` profile | every pull request to `main` |
 | `e2e-android-eas-build.yml` | an EAS build URL you paste | manual, from the Actions tab |
 
-**E2E is not mandatory.** `e2e-android.yml` is gated behind that label, so an ordinary pull request never runs it. Add the label when a change touches navigation, startup or anything a unit test cannot reach. Removing the `if:` guard would make it run on every pull request, at roughly fifteen minutes of runner time each.
+**E2E is mandatory on a pull request**, on both automatic paths. They are independent on purpose: the GitHub one needs no EAS account and works on a fresh clone, the EAS one exercises an artifact built the same way a release is.
+
+They cost real money. The GitHub path is roughly fifteen minutes of runner time per pull request, and those minutes are metered on a private repository. The EAS path spends build credits. If that bites, gate them: `pull_request_labeled` on the EAS side, an `if:` on a label for the GitHub one.
+
+### The app id
+
+`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, because the EAS `maestro` job does not pass one. All three runners build the **development** variant, so `com.myapptemplate.development` is correct everywhere. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
 
 Maestro Cloud is deliberately not used. It is a good product and it is paid; both workflows here run on a GitHub-hosted emulator instead.
 

@@ -61,6 +61,21 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "development"
       }
+    },
+    "e2e-test": {
+      "withoutCredentials": true,
+      "environment": "development",
+      "ios": {
+        "simulator": true,
+        "image": "latest"
+      },
+      "android": {
+        "buildType": "apk",
+        "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "development"
+      }
     }
   },
   "submit": {

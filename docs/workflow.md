@@ -114,7 +114,7 @@ The hooks run automatically: branch name, `eslint --fix` on staged files, `tsc -
 git push -u origin feat/checkout-summary
 ```
 
-Three checks gate the merge: lint, type-check, tests. Add the `android-test-github` label when the change touches navigation, startup, or anything a unit test cannot reach — that is what runs the Maestro flow on an emulator.
+Lint, type-check, unit tests and the Maestro end-to-end flows all gate the merge. The E2E runs automatically on two paths — one on a GitHub emulator, one on EAS — so nothing is opt-in any more.
 
 The description should say **why**, and call out anything you decided not to do. See [ci/workflows.md](./ci/workflows.md) for the whole pipeline.
 
