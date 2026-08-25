@@ -45,15 +45,15 @@ Target `testID`s, not visible text. Text moves with translation — a flow asser
 
 Two workflows, both free, neither needing a secret:
 
-| Workflow | APK from | Trigger |
+| Entry point | APK from | Trigger |
 | --- | --- | --- |
-| `e2e-android.yml` | Gradle, inside GitHub Actions | every pull request to `main` |
-| `.eas/workflows/e2e-test-android.yml` | EAS Build, `e2e-test` profile | every pull request to `main` |
+| `e2e-android.yml` | Gradle, inside GitHub Actions | manual, from the Actions tab |
+| `.eas/workflows/e2e-test-android.yml` | EAS Build, `e2e-test` profile | manual, `eas workflow:run` |
 | `e2e-android-eas-build.yml` | an EAS build URL you paste | manual, from the Actions tab |
 
-**E2E is mandatory on a pull request**, on both automatic paths. They are independent on purpose: the GitHub one needs no EAS account and works on a fresh clone, the EAS one exercises an artifact built the same way a release is.
+**Nothing here runs automatically.** Every path is manual, on purpose. A full Android build plus an emulator run is about fifteen minutes of runner time, metered on a private repository, and the EAS paths spend build credits — so none of it should fire before you have decided the cost is worth paying.
 
-They cost real money. The GitHub path is roughly fifteen minutes of runner time per pull request, and those minutes are metered on a private repository. The EAS path spends build credits. If that bites, gate them: `pull_request_labeled` on the EAS side, an `if:` on a label for the GitHub one.
+The trigger to add is written in a comment at the top of each file. The EAS path is the one to reach for once an EAS project exists: it builds the artifact the same way a release does, and `eas.json` already carries an `e2e-test` profile for it.
 
 ### The app id
 

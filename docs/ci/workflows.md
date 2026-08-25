@@ -17,7 +17,6 @@ flowchart LR
     PR --> TYPE["Type Check"]
     PR --> TEST["Tests"]
     PR -.->|"only if deps changed"| DOC["Expo Doctor"]
-    PR --> E2E["E2E Android"]
 
     PUSH --> LINT
     PUSH --> TYPE
@@ -28,7 +27,9 @@ flowchart LR
     MAN --> VER["New App Version"]
     MAN --> QA["EAS QA Build"]
     MAN --> PROD["EAS Production Build"]
-    MAN --> E2EAS["E2E from EAS APK"]
+    MAN --> E2EAS["E2E Android"]
+    MAN --> E2EAS2["E2E from EAS APK"]
+    MAN --> EASWF["EAS Workflow<br/>build + Maestro"]
 
     TAG --> GHREL["New GitHub Release"]
     REL --> QA
@@ -39,13 +40,10 @@ Solid arrows always fire. Dotted arrows depend on a condition — a changed path
 
 ## On every pull request
 
-End-to-end tests run here too, on two independent paths — one on GitHub's emulator, one on EAS. Neither is free: the GitHub path costs about fifteen minutes of runner time per pull request, metered on a private repository, and the EAS path spends build credits. Gate them behind a label if that becomes a problem.
-
 
 | Workflow | Runs | Fails when |
 | --- | --- | --- |
 | `lint-ts.yml` | `eslint .` | a lint or formatting rule is broken |
-| `e2e-android.yml` | Maestro flows on a GitHub-hosted Android emulator | an end-to-end flow fails |
 | `type-check.yml` | `tsc --noemit` | types do not check |
 | `test.yml` | `jest` | a unit test fails |
 
@@ -56,8 +54,9 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | Workflow | Trigger |
 | --- | --- |
 | `expo-doctor.yml` | pull request touching `package.json` or `pnpm-lock.yaml` |
-| `e2e-android.yml` | every pull request to main |
+| `e2e-android.yml` | manual only |
 | `e2e-android-eas-build.yml` | manual, takes an EAS APK URL |
+| `.eas/workflows/e2e-test-android.yml` | manual, via `eas workflow:run` |
 | `compress-images.yml` | pull request touching images |
 | `stale.yml` | schedule |
 

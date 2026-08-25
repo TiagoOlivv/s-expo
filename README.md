@@ -71,10 +71,9 @@ flowchart TD
         P2["Type Check"]
         P3["Tests"]
         P4["Expo Doctor<br/>(only if deps changed)"]
-        P5["E2E Android<br/>Maestro on an emulator"]
     end
 
-    PR --> P1 & P2 & P3 & P4 & P5
+    PR --> P1 & P2 & P3 & P4
 
     P1 & P2 & P3 --> M["merge to main"]
 
@@ -120,12 +119,16 @@ Husky runs these on `pre-commit` and `commit-msg`. A commit that would fail CI n
 | `type-check.yml` | `tsc --noemit`, annotated inline | yes |
 | `test.yml` | `jest`, with the summary posted as a comment | yes |
 | `expo-doctor.yml` | only when `package.json` or `pnpm-lock.yaml` changed | yes, when it runs |
-| `e2e-android.yml` | Maestro on a GitHub-hosted emulator | yes |
-| `.eas/workflows/e2e-test-android.yml` | EAS builds the APK, EAS runs Maestro on it | yes, once EAS is configured |
 
-Both E2E paths run on every pull request. That is not free: the GitHub one builds an APK and boots an emulator, roughly fifteen minutes of runner time, and on a **private** repository those minutes are metered. The EAS one spends build credits.
+**End-to-end tests do not run automatically.** Three Maestro entry points exist and all three are manual, because a full Android build plus an emulator run costs about fifteen minutes of metered runner time on a private repository, and the EAS path spends build credits:
 
-If that becomes a problem, the cheapest change is to gate them again — `pull_request_labeled` on the EAS side, an `if:` on the label for the GitHub one.
+| How to run it | What it does |
+| --- | --- |
+| `pnpm e2e-test` | locally, against a build already installed on a simulator |
+| `e2e-android.yml`, from the Actions tab | builds the APK with Gradle in CI, runs Maestro on an emulator |
+| `eas workflow:run .eas/workflows/e2e-test-android.yml` | EAS builds the APK and runs Maestro on it |
+
+Wire one of them to `pull_request` when the cost is worth paying — the trigger to add is written in a comment at the top of each file.
 
 ### 3 · main
 

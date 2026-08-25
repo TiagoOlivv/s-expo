@@ -114,7 +114,7 @@ The hooks run automatically: branch name, `eslint --fix` on staged files, `tsc -
 git push -u origin feat/checkout-summary
 ```
 
-Lint, type-check, unit tests and the Maestro end-to-end flows all gate the merge. The E2E runs automatically on two paths — one on a GitHub emulator, one on EAS — so nothing is opt-in any more.
+Three checks gate the merge: lint, type-check and the unit tests. End-to-end tests are **not** part of the gate — every Maestro path is manual today, so run one by hand when a change touches navigation or startup.
 
 The description should say **why**, and call out anything you decided not to do. See [ci/workflows.md](./ci/workflows.md) for the whole pipeline.
 

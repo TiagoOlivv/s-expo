@@ -3,13 +3,16 @@ name: e2e-test-android
 # Builds an APK with the dedicated e2e-test profile and runs the Maestro flows
 # against it on EAS infrastructure.
 #
-# This costs EAS build credits on every pull request. If that becomes a problem,
-# switch the trigger to `pull_request_labeled` or drop `on` entirely and run it
-# by hand with `eas workflow:run .eas/workflows/e2e-test-android.yml`.
-
-on:
-  pull_request:
-    branches: [main]
+# There is no automatic trigger on purpose: every run spends EAS build credits,
+# and this project has no EAS project configured yet. Run it by hand with
+#
+#   eas workflow:run .eas/workflows/e2e-test-android.yml
+#
+# To run it on every pull request instead, add:
+#
+#   on:
+#     pull_request:
+#       branches: [main]
 
 jobs:
   build_android_for_e2e:
