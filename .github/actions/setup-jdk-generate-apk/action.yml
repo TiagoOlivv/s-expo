@@ -23,7 +23,7 @@ inputs:
     required: true
     default: preview
   EXPO_PUBLIC_API_URL:
-    description: 'API base URL. env.ts validates it as a URL and prebuild refuses to run without one.'
+    description: API base URL. env.ts validates it as a URL and prebuild refuses to run without one.
     required: false
     default: 'https://api.dev.example.com/'
 
