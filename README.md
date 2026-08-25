@@ -52,7 +52,7 @@ pnpm check-all        # all of the above + translation lint
 pnpm e2e-test         # maestro flows (requires a running emulator)
 ```
 
-Every change is written test-first. The conventions live in [`docs/`](./docs/README.md).
+Every change is written test-first. **[`docs/workflow.md`](./docs/workflow.md) is the development loop** — how a change goes from an idea to a merge — and the rest of the conventions live in [`docs/`](./docs/README.md).
 
 ## CI/CD
 
@@ -71,10 +71,9 @@ flowchart TD
         P2["Type Check"]
         P3["Tests"]
         P4["Expo Doctor<br/>(only if deps changed)"]
-        P5["E2E Android<br/>(only with the label)"]
     end
 
-    PR --> P1 & P2 & P3 & P4 & P5
+    PR --> P1 & P2 & P3 & P4
 
     P1 & P2 & P3 --> M["merge to main"]
 
@@ -120,9 +119,16 @@ Husky runs these on `pre-commit` and `commit-msg`. A commit that would fail CI n
 | `type-check.yml` | `tsc --noemit`, annotated inline | yes |
 | `test.yml` | `jest`, with the summary posted as a comment | yes |
 | `expo-doctor.yml` | only when `package.json` or `pnpm-lock.yaml` changed | yes, when it runs |
-| `e2e-android.yml` | Maestro on an emulator — **only** if the PR carries the `android-test-github` label | opt-in |
 
-E2E is opt-in because a full Android build plus emulator run costs roughly fifteen minutes. Add the label when a change touches navigation, startup or anything a unit test cannot reach.
+**End-to-end tests do not run automatically.** Three Maestro entry points exist and all three are manual, because a full Android build plus an emulator run costs about fifteen minutes of metered runner time on a private repository, and the EAS path spends build credits:
+
+| How to run it | What it does |
+| --- | --- |
+| `pnpm e2e-test` | locally, against a build already installed on a simulator |
+| `e2e-android.yml`, from the Actions tab | builds the APK with Gradle in CI, runs Maestro on an emulator |
+| `eas workflow:run .eas/workflows/e2e-test-android.yml` | EAS builds the APK and runs Maestro on it |
+
+Wire one of them to `pull_request` when the cost is worth paying — the trigger to add is written in a comment at the top of each file.
 
 ### 3 · main
 

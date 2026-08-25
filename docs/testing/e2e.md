@@ -21,7 +21,7 @@ Three things have to be in place first, and none of them is optional:
 2. **A built app installed on a simulator or emulator** — `pnpm ios` or `pnpm android`. Maestro drives an installed binary; it does not build one.
 3. **A booted device**, with only one running. Maestro picks the connected device and gets confused by several.
 
-The app id comes from the script: `-e APP_ID=com.myapptemplate.development`. It has to match the environment you built. Building `preview` and running the flow against the `development` id fails with a launch error that looks nothing like the real cause.
+The flow declares the app id itself, so build the **development** variant. Building `preview` and running the flow fails with a launch error that looks nothing like its real cause.
 
 ## Writing a flow
 
@@ -45,12 +45,19 @@ Target `testID`s, not visible text. Text moves with translation — a flow asser
 
 Two workflows, both free, neither needing a secret:
 
-| Workflow | APK from | Trigger |
+| Entry point | APK from | Trigger |
 | --- | --- | --- |
-| `e2e-android.yml` | Gradle, built in CI | pull request labelled `android-test-github` |
+| `e2e-android.yml` | Gradle, inside GitHub Actions | manual, from the Actions tab |
+| `.eas/workflows/e2e-test-android.yml` | EAS Build, `e2e-test` profile | manual, `eas workflow:run` |
 | `e2e-android-eas-build.yml` | an EAS build URL you paste | manual, from the Actions tab |
 
-**E2E is not mandatory.** `e2e-android.yml` is gated behind that label, so an ordinary pull request never runs it. Add the label when a change touches navigation, startup or anything a unit test cannot reach. Removing the `if:` guard would make it run on every pull request, at roughly fifteen minutes of runner time each.
+**Nothing here runs automatically.** Every path is manual, on purpose. A full Android build plus an emulator run is about fifteen minutes of runner time, metered on a private repository, and the EAS paths spend build credits — so none of it should fire before you have decided the cost is worth paying.
+
+The trigger to add is written in a comment at the top of each file. The EAS path is the one to reach for once an EAS project exists: it builds the artifact the same way a release does, and `eas.json` already carries an `e2e-test` profile for it.
+
+### The app id
+
+`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, because the EAS `maestro` job does not pass one. All three runners build the **development** variant, so `com.myapptemplate.development` is correct everywhere. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
 
 Maestro Cloud is deliberately not used. It is a good product and it is paid; both workflows here run on a GitHub-hosted emulator instead.
 

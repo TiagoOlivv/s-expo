@@ -2,7 +2,44 @@
 
 Twelve workflows in `.github/workflows/`. Only three run on an ordinary pull request; the rest are manual, event-driven or gated behind a label.
 
+## What triggers what
+
+```mermaid
+flowchart LR
+    PR["pull request<br/>to main"]
+    PUSH["push<br/>to main"]
+    TAG["push<br/>a tag"]
+    REL["release<br/>published"]
+    MAN["run by hand<br/>Actions tab"]
+    CRON["schedule<br/>daily"]
+
+    PR --> LINT["Lint TS"]
+    PR --> TYPE["Type Check"]
+    PR --> TEST["Tests"]
+    PR -.->|"only if deps changed"| DOC["Expo Doctor"]
+
+    PUSH --> LINT
+    PUSH --> TYPE
+    PUSH --> TEST
+    PUSH -.->|"only if deps changed"| DOC
+    PUSH -.->|"only if images changed"| IMG["Compress images"]
+
+    MAN --> VER["New App Version"]
+    MAN --> QA["EAS QA Build"]
+    MAN --> PROD["EAS Production Build"]
+    MAN --> E2EAS["E2E Android"]
+    MAN --> E2EAS2["E2E from EAS APK"]
+    MAN --> EASWF["EAS Workflow<br/>build + Maestro"]
+
+    TAG --> GHREL["New GitHub Release"]
+    REL --> QA
+    CRON --> STALE["Mark stale"]
+```
+
+Solid arrows always fire. Dotted arrows depend on a condition — a changed path, or a label on the pull request.
+
 ## On every pull request
+
 
 | Workflow | Runs | Fails when |
 | --- | --- | --- |
@@ -17,8 +54,9 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | Workflow | Trigger |
 | --- | --- |
 | `expo-doctor.yml` | pull request touching `package.json` or `pnpm-lock.yaml` |
-| `e2e-android.yml` | pull request labelled `android-test-github` |
+| `e2e-android.yml` | manual only |
 | `e2e-android-eas-build.yml` | manual, takes an EAS APK URL |
+| `.eas/workflows/e2e-test-android.yml` | manual, via `eas workflow:run` |
 | `compress-images.yml` | pull request touching images |
 | `stale.yml` | schedule |
 
@@ -31,7 +69,24 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | `eas-build-qa.yml` | a published release, or manual | `EXPO_TOKEN` |
 | `eas-build-prod.yml` | manual only | `EXPO_TOKEN` |
 
-Those four form a chain: *New App Version* bumps the version and pushes a tag, the tag publishes a GitHub release, and the published release starts the QA build. Production stays manual and outside the chain, so nothing reaches a store without someone deciding it should.
+Those four form a chain:
+
+```mermaid
+flowchart TD
+    START(["you pick patch / minor / major"]) --> VER["New App Version"]
+    VER --> BUMP["bump version in package.json<br/>run prebuild so native matches"]
+    BUMP --> TAG["push a tag"]
+    TAG --> GHREL["New GitHub Release<br/>triggered by the tag"]
+    GHREL --> PUB["release published"]
+    PUB --> QA["EAS QA Build<br/>preview profile, both platforms"]
+
+    PROD["EAS Production Build"]
+    MANUAL(["a separate, deliberate decision"]) --> PROD
+
+    TAG -.->|"no GH_TOKEN:<br/>the chain stops here, silently"| DEAD(["nothing fires"])
+```
+
+*New App Version* bumps the version and pushes a tag, the tag publishes a GitHub release, and the published release starts the QA build. Production stays manual and outside the chain, so nothing reaches a store without someone deciding it should.
 
 The chain has one failure mode that looks like nothing happening at all. A push made with the automatic `GITHUB_TOKEN` does not trigger other workflows, so without a `GH_TOKEN` the tag lands and *New GitHub Release* never fires.
 

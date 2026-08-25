@@ -7,21 +7,21 @@
 # As a first step, it will generate a test APK using the Gradle build and then upload it as an artifact.
 # A new job will be started to run the tests using the test APK generated in the previous job.
 # To test the app, we set up an Android emulator using the `reactivecircus/android-emulator-runner` action. This runner requires macOS as the operating system for the runner.
-# This workflow will be triggered on pull requests (PRs) with the label "android-test-github" or can be manually triggered from the Actions tab.
+# Run it by hand from the Actions tab. It is not wired to pull requests.
 #
 
 # 🚨 GITHUB SECRETS REQUIRED: None
 
 name: E2E Tests Android (Maestro + Github Action)
 
+# Disabled on pull requests on purpose: a full Android build plus an emulator
+# run costs about fifteen minutes of runner time, and those minutes are metered
+# on a private repository. Re-enable by adding the pull_request trigger back.
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main, master]
 
 jobs:
   generate-test-apk:
-    if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'android-test-github'))
     name: Generate Test APK (Gradle)
     runs-on: ubuntu-latest
 
@@ -37,7 +37,7 @@ jobs:
       - name: 📦 Set Up JDK + Generate Test APK
         uses: ./.github/actions/setup-jdk-generate-apk
         with:
-          APP_ENV: preview
+          APP_ENV: development
 
       - name: Upload Test APK
         uses: actions/upload-artifact@v3
@@ -102,7 +102,7 @@ jobs:
           profile: Nexus 6
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
-            $HOME/.maestro/bin/maestro test .maestro/ --env=APP_ID=com.myapptemplate.preview  --format junit
+            $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts
         if: always()

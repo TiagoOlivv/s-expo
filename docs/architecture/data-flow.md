@@ -4,16 +4,33 @@ Nothing in the app fetches data yet. This describes the wiring that is already i
 
 ## Route to screen
 
-```
-src/app/index.tsx          export { HomeScreen as default } from '@/features/home/home-screen'
-  └─ features/home/home-screen.tsx     composition only
-       └─ components/preferences-bar.tsx
-            └─ toggle-preferences.ts   pure functions, unit tested
+```mermaid
+flowchart TD
+    ROUTE["src/app/index.tsx<br/>one-line re-export"] --> SCREEN["home-screen.tsx<br/>composition only"]
+    SCREEN --> BAR["components/preferences-bar.tsx<br/>renders and wires"]
+    BAR --> PURE["toggle-preferences.ts<br/>pure decisions"]
+
+    PURE -.->|"tested directly, no render"| T1["toggle-preferences.test.ts"]
+    SCREEN -.->|"tested by what it renders"| T2["home-screen.test.tsx"]
 ```
 
 The split matters for testing: `toggle-preferences.ts` holds the decisions and is tested without rendering anything, while the component is tested for what it renders.
 
 ## Server state
+
+```mermaid
+flowchart LR
+    COMP["component"] -->|"calls the hook"| HOOK["usePosts()<br/>features/x/api.ts"]
+    HOOK --> RQK["react-query-kit<br/>createQuery"]
+    RQK --> TQ["TanStack Query<br/>cache"]
+    TQ -->|"miss"| CLIENT["axios client<br/>lib/api/client.tsx"]
+    CLIENT --> API(["your API"])
+    TQ -->|"hit"| COMP
+
+    STORE["Zustand store<br/>use-x-store.tsx"] -.->|"client state only,<br/>never a copy of server data"| COMP
+    MMKV["MMKV<br/>lib/storage.tsx"] --- STORE
+```
+
 
 `src/lib/api` is already wired: `client.tsx` is an axios instance pointed at `EXPO_PUBLIC_API_URL`, and `provider.tsx` supplies the TanStack Query client, mounted in `src/app/_layout.tsx`.
 
