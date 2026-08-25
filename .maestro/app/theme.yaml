@@ -1,0 +1,43 @@
+appId: com.myapptemplate.development
+---
+# Switching the theme flips the toggle in place.
+#
+# Same reasoning as language.yaml: the theme is persisted, so the flow drives
+# itself to dark first rather than clearing state.
+#
+# What is asserted is the toggle's accessibility label, not the emoji it shows.
+# The Pressable carries an accessibilityLabel, which makes iOS collapse its
+# subtree into a single accessibility element - the child Text never reaches the
+# hierarchy, so `assertVisible: "🌙"` can never match. Both the emoji and the
+# label are derived from the same resolved theme, so the label is a faithful
+# read of it. What this does not cover is the colours themselves; only a
+# screenshot diff would.
+- launchApp
+
+- runFlow:
+    when:
+      visible:
+        id: theme-button
+        text: Switch to dark theme
+    commands:
+      - tapOn:
+          id: theme-button
+
+- assertVisible:
+    id: theme-button
+    text: Switch to light theme
+
+- tapOn:
+    id: theme-button
+
+- assertVisible:
+    id: theme-button
+    text: Switch to dark theme
+
+# Back to dark, the template's default.
+- tapOn:
+    id: theme-button
+
+- assertVisible:
+    id: theme-button
+    text: Switch to light theme

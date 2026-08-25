@@ -4,12 +4,22 @@
 # together with BUNDLE_IDS/PACKAGES in env.ts.
 appId: com.myapptemplate.development
 ---
+# Smoke test: the start screen renders and every control is reachable.
+#
+# Nothing here depends on the stored theme or language. Those belong to
+# theme.yaml and language.yaml, which normalise the state themselves - see the
+# comment in either one for why clearState is not used.
 - launchApp
+
 - assertVisible:
     id: home-title
+    text: MyAppTemplate Starter
+
 - assertVisible:
     id: home-description
+
 - assertVisible:
     id: theme-button
+
 - assertVisible:
     id: language-button
