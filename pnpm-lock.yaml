@@ -189,6 +189,9 @@ importers:
       '@types/lodash.memoize':
         specifier: ^4.1.9
         version: 4.1.9
+      '@types/node':
+        specifier: ^25.0.9
+        version: 25.0.9
       '@types/react':
         specifier: ~19.2.18
         version: 19.2.18

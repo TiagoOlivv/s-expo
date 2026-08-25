@@ -13,13 +13,15 @@
     "strict": true,
     "esModuleInterop": true,
     "types": [
-      "jest"
+      "jest",
+      "node"
     ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
+    "expo-types.d.ts",
     "expo-env.d.ts",
     "uniwind-types.d.ts",
     "env.ts"
