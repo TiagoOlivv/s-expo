@@ -26,6 +26,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ubuntu-latest ships with roughly 14 GB free, and an Android build plus an
+      # emulator system image does not fit - the first run here died 39 minutes
+      # in with "No space left on device". None of what is removed below is used
+      # by this workflow. The Android SDK and its NDK are deliberately left
+      # alone: some Expo modules still compile from source against them.
+      - name: 🧹 Free up disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
       - name: 📦 Checkout project repo
         uses: actions/checkout@v4
         with:
@@ -56,6 +69,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ubuntu-latest ships with roughly 14 GB free, and an Android build plus an
+      # emulator system image does not fit - the first run here died 39 minutes
+      # in with "No space left on device". None of what is removed below is used
+      # by this workflow. The Android SDK and its NDK are deliberately left
+      # alone: some Expo modules still compile from source against them.
+      - name: 🧹 Free up disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
       # The emulator needs KVM, and the runner does not hand it over by default.
       - name: Enable KVM group perms
         run: |
