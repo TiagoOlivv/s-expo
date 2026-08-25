@@ -1,6 +1,4 @@
 import type { ViewProps } from 'react-native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-
 import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -71,10 +69,8 @@ function Providers({
       <KeyboardProvider>
         <ThemeProvider value={theme}>
           <APIProvider>
-            <BottomSheetModalProvider>
-              {children}
-              <FlashMessage position="top" />
-            </BottomSheetModalProvider>
+            {children}
+            <FlashMessage position="top" />
           </APIProvider>
         </ThemeProvider>
       </KeyboardProvider>
