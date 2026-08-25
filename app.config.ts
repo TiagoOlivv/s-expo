@@ -57,7 +57,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#E6F4FE',
+      backgroundColor: '#f0f0f0',
     },
     package: Env.EXPO_PUBLIC_PACKAGE,
   },
@@ -69,9 +69,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#208AEF',
         image: './assets/splash-icon.png',
-        imageWidth: 76,
+        resizeMode: 'contain',
+        backgroundColor: '#f0f0f0',
+        imageWidth: 449,
       },
     ],
     [
