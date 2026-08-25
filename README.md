@@ -8,8 +8,8 @@ Derived from the [Obytes React Native starter](https://github.com/obytes/react-n
 
 | Concern | Choice |
 | --- | --- |
-| Runtime | Expo SDK 54, React Native 0.81.5, React 19.1 |
-| Routing | Expo Router 6 (file-based, typed routes) |
+| Runtime | Expo SDK 57, React Native 0.86, React 19.2 |
+| Routing | Expo Router 57 (file-based, typed routes) |
 | Styling | Uniwind + Tailwind CSS 4 (`className`, theme via CSS `@theme`) |
 | Server state | TanStack Query 5 + axios |
 | Client state | Zustand 5 |
@@ -18,6 +18,7 @@ Derived from the [Obytes React Native starter](https://github.com/obytes/react-n
 | Unit tests | Jest + React Testing Library |
 | E2E | Maestro |
 | Lint & format | ESLint (`@antfu/eslint-config`, formatting via ESLint Stylistic — no Prettier) |
+| Language | TypeScript 6, strict |
 | Package manager | pnpm |
 
 ## Getting started
@@ -41,7 +42,7 @@ pnpm check-all        # all of the above + translation lint
 pnpm e2e-test         # maestro flows (requires a running emulator)
 ```
 
-Every change is written test-first.
+Every change is written test-first. The conventions live in [`docs/`](./docs/README.md).
 
 ## What ships
 
@@ -49,7 +50,9 @@ A single route rendering one screen: a centred title built from the app name plu
 
 Dark is the theme a fresh install starts on, and `en-US` is the starting language.
 
-The design system in `src/components/ui` stays fully intact and tested, and `docs/reference/removed-patterns.md` keeps the working code for data fetching, stores, forms and settings rows that this template used to ship, so those conventions can be restored deliberately rather than reinvented.
+`src/components/ui` is trimmed to what the screen actually renders — `Text`, the focus-aware status bar, the theme mapping and the React Native re-exports. The infrastructure underneath is untouched and fully wired: HTTP client, query provider, MMKV storage, i18n, theming, testing and CI.
+
+Everything removed along the way — data fetching, Zustand stores, forms, settings rows, the button, input, checkbox, select and modal components — is preserved verbatim in [`docs/reference/removed-patterns.md`](./docs/reference/removed-patterns.md). Copy a pattern back when you need it instead of rewriting it.
 
 ## Project structure
 
