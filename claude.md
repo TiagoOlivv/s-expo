@@ -4,8 +4,8 @@ Expo template for responsive multi-platform apps (phone/tablet, iOS/Android). De
 
 ## Stack
 
-- **Expo SDK 54** / React Native 0.81.5 / React 19.1 — custom dev client, Expo Go is not supported
-- **Expo Router 6** — file-based routing, typed routes enabled
+- **Expo SDK 57** / React Native 0.86.2 / React 19.2.3 — custom dev client, Expo Go is not supported
+- **Expo Router 57** — file-based routing, typed routes enabled. Import navigation APIs from `expo-router/react-navigation`, never from `@react-navigation/*`: since SDK 56 the bundler rejects those imports in application code
 - **Uniwind + Tailwind CSS 4** — `className` on RN components; theme lives in `src/global.css` under `@theme`. This project does **not** use NativeWind
 - **TanStack Query 5** + axios — server state (`src/lib/api`)
 - **Zustand 5** — client state
@@ -13,6 +13,7 @@ Expo template for responsive multi-platform apps (phone/tablet, iOS/Android). De
 - **i18next** — `en-US` is the default language, `pt-BR` is the alternative
 - **Jest + React Testing Library** — unit tests; **Maestro** — E2E
 - **ESLint** (`@antfu/eslint-config`) — lints *and* formats via ESLint Stylistic. There is no Prettier
+- **TypeScript 6**, strict. `compilerOptions.types` names `jest` explicitly — TS 6 no longer auto-includes `@types/*`
 - **pnpm** — enforced by `only-allow`
 
 ## Structure
@@ -29,6 +30,10 @@ src/
 ```
 
 A feature folder contains: `<name>-screen.tsx`, optional `components/`, optional `api.ts`, optional `use-<name>-store.tsx`, and tests beside the files they cover.
+
+## Documentation
+
+`docs/` holds the full conventions. Read [`docs/README.md`](docs/README.md) before a non-trivial change; [`docs/guides/add-a-feature.md`](docs/guides/add-a-feature.md) is the end-to-end recipe.
 
 ## Rules
 
