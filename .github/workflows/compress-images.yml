@@ -21,6 +21,12 @@ on:
       - '**.webp'
   workflow_dispatch:
 
+# create-pull-request needs to push a branch and open the pull request itself.
+# Repositories default to a read-only GITHUB_TOKEN, which fails at the push.
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     name: calibreapp/image-actions
@@ -40,7 +46,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.calibre.outputs.markdown != ''
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v7
         with:
           title: Auto Compress Images
           branch-suffix: timestamp
