@@ -101,11 +101,13 @@ flowchart TD
 
     subgraph R["4 · Release"]
         R1["New App Version<br/>(manual: patch/minor/major)"]
-        R2["pushes a tag"]
+        R2["opens chore/release-vX.Y.Z"]
+        R2b{{"you review and merge"}}
+        R2c["Tag Release<br/>pushes the tag"]
         R3["New GitHub Release"]
         R4["EAS QA Build<br/>preview profile"]
         R5["EAS Production Build<br/>(manual)"]
-        R1 --> R2 --> R3 --> R4
+        R1 --> R2 --> R2b --> R2c --> R3 --> R4
     end
 
     M1 --> R1
@@ -151,15 +153,19 @@ The same three gates re-run after the merge, plus two housekeeping jobs: `expo-d
 
 ### 4 · Release
 
-The chain is automatic once you start it:
+One decision starts it, one review carries it through, and the rest is automatic:
 
-1. **New App Version** — run it by hand from the Actions tab and pick `patch`, `minor` or `major`. It bumps the version, runs prebuild so the native version matches, and pushes a tag.
-2. **New GitHub Release** — fires on the pushed tag and publishes the release.
-3. **EAS QA Build** — fires when the release is published and builds the `preview` profile for both platforms.
+1. **New App Version** — run it by hand from the Actions tab and pick `patch`, `minor` or `major`. It bumps the version in `package.json` and opens `chore/release-vX.Y.Z`.
+2. **You review and merge it.** `main` is protected by a ruleset that requires a pull request, and a version bump is a change to `main` like any other.
+3. **Tag Release** — fires on the merged release pull request and pushes the tag.
+4. **New GitHub Release** — fires on the tag and publishes the release.
+5. **EAS QA Build** — fires when the release is published and builds the `preview` profile.
 
 **EAS Production Build** stays manual and separate, so nothing ships to a store by accident.
 
-One catch worth knowing before you rely on step 2 firing: a push made with the automatic `GITHUB_TOKEN` does **not** trigger other workflows. If `GH_TOKEN` is not set, *New App Version* still pushes its tag, but *New GitHub Release* never wakes up and the chain stops there. Supply a personal access token as `GH_TOKEN` to make it run end to end.
+`package.json` is the only file a release touches. `env.ts` reads the version from it and `app.config.ts` reads that, so the app, the build number and the store listing all follow from one line. There is no native code in the repository to keep in step — `ios/` and `android/` are generated.
+
+`GH_TOKEN` is required, and for a reason that is easy to trip over: **nothing done with the automatic `GITHUB_TOKEN` triggers another workflow.** A pull request opened with it arrives with no checks on it, and a tag pushed with it never publishes a release. Both failures look exactly like nothing happening.
 
 Both EAS workflows need an `EXPO_TOKEN` secret. `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` are filled in at the top of `app.config.ts` — replace both with your own when this template seeds a new app, using the id `eas init` prints. The pull-request gates need no configuration at all.
 

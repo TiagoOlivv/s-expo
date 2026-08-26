@@ -34,7 +34,6 @@
     "build:production:ios": "eas build --profile production --platform ios",
     "build:production:android": "eas build --profile production --platform android",
     "prepare": "husky",
-    "app-release": "cross-env SKIP_BRANCH_PROTECTION=true np --no-publish --no-cleanup --no-release-draft",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noemit",
@@ -129,7 +128,6 @@
     "jest-expo": "~57.0.4",
     "jest-junit": "^16.0.0",
     "lint-staged": "^16.2.7",
-    "np": "^10.3.0",
     "tailwindcss": "4.1.18",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
