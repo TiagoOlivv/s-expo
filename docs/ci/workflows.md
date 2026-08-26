@@ -29,7 +29,6 @@ flowchart LR
     MAN --> PROD["EAS Production Build"]
     MAN --> E2EAS["E2E Android"]
     MAN --> E2EAS2["E2E from EAS APK"]
-    MAN --> EASWF["EAS Workflow<br/>build + Maestro"]
 
     TAG --> GHREL["New GitHub Release"]
     REL --> QA
@@ -56,7 +55,6 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | `expo-doctor.yml` | pull request touching `package.json` or `pnpm-lock.yaml` |
 | `e2e-android.yml` | manual only |
 | `e2e-android-eas-build.yml` | manual, takes an EAS APK URL |
-| `.eas/workflows/e2e-test-android.yml` | manual, via `eas workflow:run` |
 | `compress-images.yml` | pull request touching images |
 | `stale.yml` | schedule |
 
@@ -103,9 +101,48 @@ The chain has one failure mode that looks like nothing happening at all. A push 
 
 Nothing here uses `MAESTRO_CLOUD_API_KEY`. Maestro Cloud is paid and this template does not depend on it.
 
-## Before the first EAS build
+## EAS
 
-`app.config.ts` ships with `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` empty on purpose. Fill both in — `eas init` generates the project id — or every EAS workflow fails at authentication.
+The project is linked: `@tiagoolivv/s-expo`, with `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` filled in at the top of `app.config.ts`. When this template seeds a new app, run `eas init` and replace both.
+
+`eas init` cannot write them for you. A dynamic config — `app.config.ts` rather than `app.json` — is read-only to the CLI, so the command prints the id and stops with `Cannot automatically write to dynamic config`. That is expected, not a failure.
+
+### Environment variables live on EAS, not in your `.env`
+
+Each profile in `eas.json` names an `environment`, and that points at an environment on Expo's servers. EAS Build has no access to your machine, so `.env.local` is invisible to it.
+
+`prebuild` runs with `STRICT_ENV_VALIDATION=1` and aborts without `EXPO_PUBLIC_API_URL` — the same failure that took the GitHub workflow down before the variable was supplied there. All three environments have it set:
+
+```bash
+eas env:set --environment development --name EXPO_PUBLIC_API_URL \
+  --value https://your-api.example --visibility plaintext --scope project
+```
+
+`plaintext` because any `EXPO_PUBLIC_` value is inlined into the bundle in clear text regardless. Marking it secret would be theatre.
+
+Use `eas env:update` to change one, and `eas env:list --environment <name>` to see what a build will actually receive.
+
+### And a repository variable, for the prebuild on the runner
+
+Separate problem, separate place. `.github/actions/eas-build` runs `pnpm prebuild` **on the GitHub runner** before EAS is involved, and the EAS environment is not visible to that step. Same for `.github/actions/setup-jdk-generate-apk`, which builds the E2E APK with Gradle locally.
+
+Both read `vars.EXPO_PUBLIC_API_URL`, a repository variable under *Settings > Secrets and variables > Actions > Variables*.
+
+There is no fallback value. `env.ts` validates the variable as a URL and `prebuild` aborts without it — which is a clearer failure than a build quietly aimed at a domain nobody owns. If a workflow stops with:
+
+```
+❌ Invalid environment variables:{ "EXPO_PUBLIC_API_URL": [ "Invalid URL" ] }
+```
+
+the variable is missing, not the code.
+
+### There is no EAS workflow
+
+`.eas/` does not exist here, and EAS runs no tests for this project. `maestro_test` is a paid job type: on a free plan `eas workflow:validate` rejects such a workflow outright, so it could not be validated, let alone run.
+
+EAS is used for builds and submissions. Everything that runs tests runs on GitHub Actions.
+
+If the plan changes, [the EAS Workflows docs](https://docs.expo.dev/eas/workflows/get-started/) cover the syntax, and the `e2e-test` profile in `eas.json` already builds the right artifact.
 
 ## Environments
 

@@ -79,6 +79,19 @@ function getValidatedEnv(env: z.infer<typeof envSchema>) {
   return parsed.success ? parsed.data : env;
 }
 
-const Env = STRICT_ENV_VALIDATION ? getValidatedEnv(_env) : _env;
+/**
+ * Exported twice on purpose.
+ *
+ * `app.config.ts` is read by tooling that does not all agree on interop. The
+ * Expo CLI applies `esModuleInterop`, so `import Env from './env'` hands back
+ * the object. The eas-cli loader does not: there the same import evaluates to
+ * the module namespace, `Env.EXPO_PUBLIC_VERSION` is `undefined`, and reading
+ * the config dies on `.toString()` with no hint of why.
+ *
+ * A named export is unambiguous under both, so that is what `app.config.ts`
+ * uses. The default export stays for application code, where Metro settles the
+ * question.
+ */
+export const Env = STRICT_ENV_VALIDATION ? getValidatedEnv(_env) : _env;
 
 export default Env;

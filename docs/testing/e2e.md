@@ -73,23 +73,28 @@ Assert the label instead. It and the emoji are derived from the same value, so i
 
 ## In CI
 
-Two workflows, both free, neither needing a secret:
+Two entry points, both on GitHub runners:
 
 | Entry point | APK from | Trigger |
 | --- | --- | --- |
 | `e2e-android.yml` | Gradle, inside GitHub Actions | manual, from the Actions tab |
-| `.eas/workflows/e2e-test-android.yml` | EAS Build, `e2e-test` profile | manual, `eas workflow:run` |
 | `e2e-android-eas-build.yml` | an EAS build URL you paste | manual, from the Actions tab |
 
-**Nothing here runs automatically.** Every path is manual, on purpose. A full Android build plus an emulator run is about fifteen minutes of runner time, metered on a private repository, and the EAS paths spend build credits — so none of it should fire before you have decided the cost is worth paying.
+**EAS runs no tests for this project.** `maestro_test` is a paid job type, and on a free plan `eas workflow:validate` rejects a workflow that uses one, so there is no `.eas/` directory here. EAS builds artifacts; GitHub Actions runs the flows.
 
-The trigger to add is written in a comment at the top of each file. The EAS path is the one to reach for once an EAS project exists: it builds the artifact the same way a release does, and `eas.json` already carries an `e2e-test` profile for it.
+The `e2e-test` profile in `eas.json` earns its place anyway: it builds an unsigned APK, which is exactly what `e2e-android-eas-build.yml` expects you to paste in.
+
+**`e2e-android.yml` is the path proven green**, on the emulator, in CI.
+
+**Nothing runs automatically.** Both paths are manual, on purpose. A full Android build plus an emulator run is around an hour of runner time — metered while the repository is private, free once it is public — so it should not fire before you have decided the cost is worth paying.
+
+The trigger to add is written in a comment at the top of each file.
 
 ### The app id
 
-`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, because the EAS `maestro` job does not pass one. All three runners build the **development** variant, so `com.sexpo.app.development` is correct everywhere. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
+`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`. Both workflows build the **development** variant, so `com.sexpo.app.development` is correct in either. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
 
-Maestro Cloud is deliberately not used. It is a good product and it is paid; both workflows here run on a GitHub-hosted emulator instead.
+Maestro Cloud is deliberately not used. It is a good product and it is paid; the workflows that run on the free tier use a GitHub-hosted emulator instead.
 
 ## Keeping flows honest
 
