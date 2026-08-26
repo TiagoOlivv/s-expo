@@ -140,6 +140,12 @@ The project is linked: `@tiagoolivv/s-expo`, with `EXPO_ACCOUNT_OWNER` and `EAS_
 
 `eas init` cannot write them for you. A dynamic config — `app.config.ts` rather than `app.json` — is read-only to the CLI, so the command prints the id and stops with `Cannot automatically write to dynamic config`. That is expected, not a failure.
 
+### Both EAS builds are Android only
+
+`eas-build-qa.yml` and `eas-build-prod.yml` each pass `IOS: false` to the `eas-build` composite. Their names say so — *EAS QA Build (Android)* and *EAS Production Build (Android)* — because a workflow that claims a platform it does not build is a lie the Actions tab repeats every run.
+
+The composite still takes an `IOS` input and still has the step behind it. Flip both to `true` once an Apple Developer account exists; nothing else has to change.
+
 ### Environment variables live on EAS, not in your `.env`
 
 Each profile in `eas.json` names an `environment`, and that points at an environment on Expo's servers. EAS Build has no access to your machine, so `.env.local` is invisible to it.
