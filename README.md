@@ -7,7 +7,7 @@
   </picture>
 </p>
 
-<h1 align="center">s-expo</h1>
+<h1 align="center">s(start)-expo</h1>
 
 <p align="center">
   Opinionated Expo template for responsive, multi-platform apps.<br />
