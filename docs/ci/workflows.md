@@ -64,7 +64,7 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | --- | --- | --- |
 | `new-app-version.yml` | manual: patch, minor or major | `GH_TOKEN` |
 | `tag-release.yml` | a merged `chore/release-v*` pull request | `GH_TOKEN` |
-| `new-github-release.yml` | a pushed tag | — |
+| `new-github-release.yml` | a pushed tag | `GH_TOKEN` |
 | `eas-build-qa.yml` | a published release, or manual | `EXPO_TOKEN` |
 | `eas-build-prod.yml` | manual only | `EXPO_TOKEN` |
 
@@ -99,18 +99,38 @@ remote: error: GH013: Repository rule violations found for refs/heads/main.
 
 That leaves a tag pointing at a commit no branch can reach. The ruleset covers `refs/heads/main` only, which is why the tag went through and why `tag-release.yml` needs no bypass.
 
-`GH_TOKEN` is required now rather than optional, and for two different reasons. Neither a pull request opened with the automatic `GITHUB_TOKEN` nor a tag pushed with it triggers another workflow — so with `GITHUB_TOKEN` the release pull request would arrive with no checks on it, and the tag would land without ever publishing a release. Both failures look like nothing happening at all.
+### One rule breaks this chain in three places
+
+**Nothing done with the automatic `GITHUB_TOKEN` triggers another workflow.** Not a pushed branch, not a pushed tag, not a created release. It exists to stop workflows from looping on themselves, and it is the single reason `GH_TOKEN` is required rather than optional.
+
+Each link was found the same way — by running it and watching nothing happen:
+
+| Link | With `GITHUB_TOKEN` | Symptom |
+| --- | --- | --- |
+| the release pull request | opened, but no gates run on it | a bump merged without lint, types or tests |
+| the tag | pushed, but no release published | the tag sits there and the chain ends |
+| the release | published, but no EAS build starts | the release page looks perfect and nothing builds |
+
+The third one is the most convincing, because the release is created correctly:
+
+```
+v0.0.2 por github-actions[bot] (Bot)
+```
+
+`ncipollo/release-action` defaults to `github.token`, so the release came from the bot, and `eas-build-qa.yml` — which listens for `release: published` — never woke up. It had never run once.
+
+Every step that starts the next one is handed `secrets.GH_TOKEN` explicitly.
 
 ## Secrets
 
 | Secret | Used by | What it is | Required |
 | --- | --- | --- | --- |
 | `EXPO_TOKEN` | both EAS build workflows | an access token from [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens); authenticates `eas build` | yes, for any EAS build |
-| `GH_TOKEN` | `new-app-version.yml` | a PAT with repository write, used to push the version bump and tag | no |
+| `GH_TOKEN` | `new-app-version.yml`, `tag-release.yml`, `new-github-release.yml` | a fine-grained PAT with **Contents: read and write** and **Pull requests: read and write**, scoped to this repository | yes, for the release chain |
 
 `GITHUB_TOKEN` appears in several workflows and is injected automatically — do not add it.
 
-`GH_TOKEN` is optional because the workflow falls back to `GITHUB_TOKEN`. The difference matters at the edge: a push made with `GITHUB_TOKEN` does not trigger other workflows, so a tag created that way will not start the release build. Supply a PAT if you want that chain to fire.
+Both permissions were established by failure. Without Contents the branch push is refused with `Write access to repository not granted`; without Pull requests the run dies at `Resource not accessible by personal access token`. Editing a fine-grained token's permissions does not change its value, so the secret survives the fix.
 
 Nothing here uses `MAESTRO_CLOUD_API_KEY`. Maestro Cloud is paid and this template does not depend on it.
 
