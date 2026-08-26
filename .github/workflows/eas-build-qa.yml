@@ -42,5 +42,6 @@ jobs:
         with:
           APP_ENV: preview
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
           VERSION: ${{ github.event.release.tag_name }}
           IOS: false # TODO: set as true when IOS account is ready

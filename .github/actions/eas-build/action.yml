@@ -52,6 +52,9 @@ inputs:
     description: EXPO_TOKEN
     required: true
     default: 'false'
+  EXPO_PUBLIC_API_URL:
+    description: API base URL, for the prebuild this action runs on the runner. EAS resolves its own environment for the build itself; this one is only for the local step.
+    required: true
 
 runs:
   using: composite
@@ -70,9 +73,14 @@ runs:
         eas-version: latest
         token: ${{ inputs.EXPO_TOKEN }}
 
+    # This prebuild runs here, on the runner, before EAS is involved at all. It
+    # validates the environment strictly, and the EAS environment is not visible
+    # to it - so the value has to arrive from the repository.
     - name: ⚙️ Run Prebuild
       run: pnpm prebuild:${{ inputs.APP_ENV }}
       shell: bash
+      env:
+        EXPO_PUBLIC_API_URL: ${{ inputs.EXPO_PUBLIC_API_URL }}
 
     - name: 📱 Run Android Build
       if: ${{ inputs.ANDROID == 'true' }}

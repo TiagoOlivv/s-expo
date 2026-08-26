@@ -115,12 +115,26 @@ Each profile in `eas.json` names an `environment`, and that points at an environ
 
 ```bash
 eas env:set --environment development --name EXPO_PUBLIC_API_URL \
-  --value https://api.dev.example.com/ --visibility plaintext --scope project
+  --value https://your-api.example --visibility plaintext --scope project
 ```
 
 `plaintext` because any `EXPO_PUBLIC_` value is inlined into the bundle in clear text regardless. Marking it secret would be theatre.
 
-The value in **production** is still the placeholder. Point it at the real API before a production build.
+Use `eas env:update` to change one, and `eas env:list --environment <name>` to see what a build will actually receive.
+
+### And a repository variable, for the prebuild on the runner
+
+Separate problem, separate place. `.github/actions/eas-build` runs `pnpm prebuild` **on the GitHub runner** before EAS is involved, and the EAS environment is not visible to that step. Same for `.github/actions/setup-jdk-generate-apk`, which builds the E2E APK with Gradle locally.
+
+Both read `vars.EXPO_PUBLIC_API_URL`, a repository variable under *Settings > Secrets and variables > Actions > Variables*.
+
+There is no fallback value. `env.ts` validates the variable as a URL and `prebuild` aborts without it — which is a clearer failure than a build quietly aimed at a domain nobody owns. If a workflow stops with:
+
+```
+❌ Invalid environment variables:{ "EXPO_PUBLIC_API_URL": [ "Invalid URL" ] }
+```
+
+the variable is missing, not the code.
 
 ### There is no EAS workflow
 
