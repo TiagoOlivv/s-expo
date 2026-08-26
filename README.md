@@ -41,6 +41,7 @@ The project structure, the CI workflows and most of the tooling choices come fro
 
 ```bash
 pnpm install
+pnpm rename my-app com.acme.myapp   # only when seeding a new project
 pnpm env:use development   # copies .env.development.example onto .env.local
 pnpm start                 # dev server
 pnpm ios                   # run on iOS simulator

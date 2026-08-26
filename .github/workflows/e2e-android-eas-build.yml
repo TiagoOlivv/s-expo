@@ -131,7 +131,7 @@ jobs:
             if [ -z "$(adb shell pm path "$APP_ID" 2>/dev/null)" ]; then
               echo "::error::The APK does not contain $APP_ID, which every flow launches."
               echo "Installed instead:"
-              adb shell pm list packages | grep -i sexpo || true
+              adb shell pm list packages | grep "$(echo "$APP_ID" | cut -d. -f1-2)" || true
               echo "The e2e-test profile is the one that matches: eas build --profile e2e-test --platform android"
               exit 1
             fi

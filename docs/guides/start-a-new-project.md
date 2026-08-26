@@ -6,24 +6,32 @@ The template is complete except for one thing: the idea. When these steps are do
 
 ## 1 · Name the project
 
-Three names and one identifier, all currently `s-expo`:
-
-| What | Where | Current |
-| --- | --- | --- |
-| package name, slug, URL scheme | `package.json`, `env.ts` (`SCHEMES`) | `s-expo` |
-| display name | `env.ts` (`NAME`) | `SExpo` |
-| bundle id / Android package | `env.ts` (`BUNDLE_IDS`, `PACKAGES`) | `com.sexpo.app` |
-| repository URL | `package.json`, `git remote` | `TiagoOlivv/s-expo` |
-
-They also appear in `.maestro/app/*.yaml`, `.vscode/settings.json` (`cSpell.words`), the `.env.*.example` headers and the README. One pass with a search catches all of them:
-
 ```bash
-grep -ril "s-expo\|sexpo\|SExpo" --exclude-dir=node_modules --exclude-dir=.git .
+pnpm rename my-app com.acme.myapp
 ```
 
-**The bundle id is permanent once an app ships.** Android package names accept only `[a-zA-Z0-9_]` per segment and each segment must start with a letter — a hyphen will not build. Reverse-DNS with a domain you own, or with your handle, avoids collisions; a bare product name does not.
+One command, and a third argument if you want a display name other than the one derived from the app name (`my-app` becomes `MyApp`).
 
-The Maestro flows carry the app id directly, because the EAS `maestro` job does not pass `-e APP_ID`. Change them together with `env.ts` or the flows launch an app that is not there.
+It rewrites the app name, the display name and the bundle id across every file that carries them, takes the version back to `0.0.1`, clears the previous owner's `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID`, and rewrites the repository URL to a placeholder. It prints what it changed, file by file, and what is left for you.
+
+| What | Where it lives |
+| --- | --- |
+| package name, slug, URL scheme | `package.json`, `env.ts` (`SCHEMES`) |
+| display name | `env.ts` (`NAME`) |
+| bundle id and Android package | `env.ts` (`BUNDLE_IDS`, `PACKAGES`) |
+| app id every Maestro flow launches | `.maestro/app/*.yaml` |
+| the editor's spelling dictionary | `.vscode/settings.json` |
+| environment file headers | `.env.*.example` |
+
+**The bundle id is permanent once an app ships.** The script refuses a hyphen, because Android accepts only letters, digits and underscore per segment and every segment must start with a letter — `com.my-app` does not build, and Gradle says so in a way that names nothing.
+
+It touches an explicit list of files rather than sweeping the repository, and matches only whole words. That is not caution for its own sake: `pnpm-lock.yaml` contains the package `parse-imports-exports`, which holds the exact sequence `s-expo`. A blind replace corrupts the lockfile and the failure surfaces nowhere near the rename. There is a test for precisely that.
+
+### What the rename cannot reach
+
+`GITHUB_HANDLE` in `src/features/home/components/github-profile.tsx` still points at whoever this template came from. Change it, or delete the start screen along with its Maestro flows — otherwise your app opens with someone else's identity.
+
+A heading that spells the name decoratively — `s(start)-expo` rather than `s-expo` — is invisible to a rename. Read the README once afterwards.
 
 ## 2 · Pick an environment
 
@@ -137,7 +145,7 @@ Then read [../workflow.md](../workflow.md). It is the loop every change goes thr
 
 ## Checklist
 
-- [ ] Names and bundle ids replaced everywhere, including `.maestro/app/*.yaml`
+- [ ] `pnpm rename <app-name> <bundle-id>` run, and the README heading checked by eye
 - [ ] `git remote` points at the new repository
 - [ ] `pnpm env:use <environment>` run, `.env.local` exists
 - [ ] `eas init` done, `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` filled in by hand
