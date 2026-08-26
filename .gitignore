@@ -7,6 +7,19 @@ npm-debug.*
 *.p12
 *.key
 *.mobileprovision
+
+# Signing material and service account files. EAS keeps credentials on its own
+# servers by default, so none of this normally exists here - but it does the
+# moment you choose local credentials, and an Android keystore in a public
+# repository is the one mistake that cannot be walked back: whoever holds it
+# can sign updates to your app.
+*.keystore
+*.pem
+*.cer
+*.certSigningRequest
+credentials.json
+google-services.json
+GoogleService-Info.plist
 *.orig.*
 web-build/
 yarn-error.log
