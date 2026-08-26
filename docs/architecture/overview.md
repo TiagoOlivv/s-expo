@@ -51,6 +51,6 @@ Expo Router derives the navigation tree from the file system, so `src/app/` is r
 
 ## What the app currently is
 
-One route. `src/app/index.tsx` re-exports `HomeScreen`, which renders a title, a description and two toggles for theme and language. There is no authentication, no tab bar, no data fetching.
+One route. `src/app/index.tsx` re-exports `HomeScreen`, which renders a GitHub avatar and handle, a title, a description and two toggles for theme and language. There is no authentication, no tab bar, no data fetching — the avatar is a plain remote image, not a request.
 
 That is deliberate. The infrastructure below is fully wired — HTTP client, query provider, storage, i18n, theming, testing, CI — but nothing in it is spent on an example you would have to delete first. See [reference/removed-patterns.md](../reference/removed-patterns.md) for the working code this template used to ship.

@@ -120,7 +120,9 @@ The description should say **why**, and call out anything you decided not to do.
 
 ## 8 · After the merge
 
-Delete the branch, locally and on the remote. Releases are a separate, deliberate act — [ci/workflows.md](./ci/workflows.md#release).
+Delete the branch, locally and on the remote.
+
+Releases are a separate, deliberate act, and they use this same loop: *New App Version* opens a pull request that raises the version, you review and merge it, and the merge tags the commit and starts the EAS build. Nothing writes to `main` behind your back — [ci/workflows.md](./ci/workflows.md#release).
 
 ## Definition of done
 

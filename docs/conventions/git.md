@@ -42,6 +42,17 @@ Never use `--no-verify` to get around a red hook. If the hook is wrong, fix the 
 
 Every change reaches `main` through a pull request. CI runs lint, type-check and the unit tests on each one — see [../ci/workflows.md](../ci/workflows.md).
 
+This is enforced, not merely agreed. A ruleset named *Protect Main Branch* requires a pull request on `refs/heads/main` and lists **no bypass actors** — not even a repository admin. A direct push is refused:
+
+```
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+- Changes must be made through a pull request.
+```
+
+The release automation is not an exception to it. Raising the app version is a change to `main` like any other, so *New App Version* opens `chore/release-vX.Y.Z` and waits for a human to merge it. The alternative — a bypass actor for the release bot — would have reopened the door the ruleset exists to close.
+
+Tags are outside the ruleset, which targets `refs/heads/main` only. That is why `tag-release.yml` can push a tag without a bypass.
+
 Rebase onto `main` rather than merging it into your branch, so the history stays linear and each commit is a state the project was actually in.
 
 ## Rewriting history

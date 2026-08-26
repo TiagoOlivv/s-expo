@@ -33,6 +33,8 @@ A feature folder contains: `<name>-screen.tsx`, optional `components/`, optional
 
 ## Documentation
 
+**Seeding a new project from this template? [`docs/guides/start-a-new-project.md`](docs/guides/start-a-new-project.md) is the ordered checklist — naming, EAS, secrets, branch protection, and what fails first when each is missing.**
+
 **Read [`docs/workflow.md`](docs/workflow.md) before changing anything.** It is the development loop: how to classify a change, branch, write the failing test first, verify, and open a pull request. [`docs/guides/add-a-feature.md`](docs/guides/add-a-feature.md) is the worked example, and [`docs/README.md`](docs/README.md) indexes the rest.
 
 [`docs/ai-tooling.md`](docs/ai-tooling.md) lists the MCP servers worth having here — the Expo one especially, since SDK-specific breaking changes are not in any model's training data.

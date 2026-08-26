@@ -8,6 +8,7 @@ How this template is put together and the rules that keep it that way. Everythin
 
 | If you want to | Read |
 | --- | --- |
+| Seed a new project from this template | [guides/start-a-new-project.md](./guides/start-a-new-project.md) |
 | Know how to work in this repo | [workflow.md](./workflow.md) |
 | Understand how the pieces fit | [architecture/overview.md](./architecture/overview.md) |
 | Know where a file belongs | [architecture/project-structure.md](./architecture/project-structure.md) |
@@ -16,6 +17,8 @@ How this template is put together and the rules that keep it that way. Everythin
 | Write a test | [testing/unit.md](./testing/unit.md) |
 | Change colours or the theme | [design-system/theming.md](./design-system/theming.md) |
 | Understand a CI failure | [ci/workflows.md](./ci/workflows.md) |
+| Cut a release | [ci/workflows.md](./ci/workflows.md#release) |
+| Run the end-to-end flows | [testing/e2e.md](./testing/e2e.md) |
 | Move to the next Expo SDK | [guides/upgrading-sdk.md](./guides/upgrading-sdk.md) |
 | Set up your editor | [the README](../README.md#editor) |
 | Work on this with an AI agent | [ai-tooling.md](./ai-tooling.md) |
@@ -29,7 +32,7 @@ How this template is put together and the rules that keep it that way. Everythin
 - **design-system/** — [theming](./design-system/theming.md), [components](./design-system/components.md)
 - **testing/** — [unit](./testing/unit.md), [end to end](./testing/e2e.md)
 - **ci/** — [workflows](./ci/workflows.md)
-- **guides/** — [add a feature](./guides/add-a-feature.md), [environment](./guides/environment.md), [upgrading the SDK](./guides/upgrading-sdk.md)
+- **guides/** — [start a new project](./guides/start-a-new-project.md), [add a feature](./guides/add-a-feature.md), [environment](./guides/environment.md), [upgrading the SDK](./guides/upgrading-sdk.md)
 - **reference/** — [removed patterns](./reference/removed-patterns.md), working code for conventions this template no longer exercises
 
 ## The short version

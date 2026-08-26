@@ -12,12 +12,16 @@ src/
 │     ├─ home-screen.tsx
 │     ├─ home-screen.test.tsx
 │     └─ components/
+│        ├─ github-profile.tsx
+│        ├─ github-profile.test.tsx
 │        ├─ preferences-bar.tsx
 │        ├─ toggle-preferences.ts
 │        └─ toggle-preferences.test.ts
 ├─ components/ui/              design system
 │  ├─ colors.js                palette consumed by the navigation theme
 │  ├─ focus-aware-status-bar.tsx
+│  ├─ safe-area-view.tsx       SafeAreaView wrapped so className works on native
+│  ├─ safe-area-view.test.tsx
 │  ├─ text.tsx                 Text with the `tx` translation prop
 │  ├─ use-theme-config.tsx     maps the Uniwind theme to a navigation theme
 │  └─ index.tsx                barrel, plus React Native re-exports
@@ -57,7 +61,8 @@ Only `components/` is allowed as a subfolder. Use single files (`api.ts`), not f
 | File | Purpose |
 | --- | --- |
 | `app.config.ts` | Expo config. Config plugins go here, never in `ios/` or `android/` |
-| `env.ts` | environment schema, validated with Zod, and the per-environment bundle ids |
+| `env.ts` | environment schema, validated with Zod, and the per-environment bundle ids. Exports `Env` twice — the named export is what `app.config.ts` uses, because the eas-cli loader does not apply `esModuleInterop` |
+| `eas.json` | EAS build profiles. `appVersionSource: remote` puts the build numbers on Expo's servers |
 | `metro.config.js` | Metro plus the Uniwind transformer |
 | `eslint.config.mjs` | lint *and* formatting — there is no Prettier |
 | `jest-setup.ts` | global mocks for native modules |

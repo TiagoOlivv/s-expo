@@ -17,7 +17,7 @@ on:
     inputs:
       apk-url:
         type: string
-        description: EAS APK URL
+        description: 'APK from the e2e-test profile: eas build --profile e2e-test --platform android'
         required: true
         default: ''
 
@@ -120,8 +120,13 @@ jobs:
           cores: 2
           ram-size: 4096M
           profile: ${{ env.EMULATOR_PROFILE }}
+          # One command per line: this action runs the script line by line,
+          # each in its own `sh -c`, so multi-line constructs break and
+          # variables do not survive between lines. The check lives in a file
+          # for exactly that reason.
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
+            ./scripts/assert-app-installed.sh
             $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts
