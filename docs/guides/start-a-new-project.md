@@ -12,7 +12,7 @@ pnpm rename my-app com.acme.myapp
 
 One command, and a third argument if you want a display name other than the one derived from the app name (`my-app` becomes `MyApp`).
 
-It rewrites the app name, the display name and the bundle id across every file that carries them, takes the version back to `0.0.1`, clears the previous owner's `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID`, and rewrites the repository URL to a placeholder. It prints what it changed, file by file, and what is left for you.
+It rewrites the app name, the display name and the bundle id across every file that carries them, asks whether to take the version back to `0.0.1`, clears the previous owner's `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID`, and rewrites the repository URL to a placeholder. It prints what it changed, file by file, and what is left for you.
 
 | What | Where it lives |
 | --- | --- |
@@ -25,13 +25,13 @@ It rewrites the app name, the display name and the bundle id across every file t
 
 **The bundle id is permanent once an app ships.** The script refuses a hyphen, because Android accepts only letters, digits and underscore per segment and every segment must start with a letter — `com.my-app` does not build, and Gradle says so in a way that names nothing.
 
-It touches an explicit list of files rather than sweeping the repository, and matches only whole words. That is not caution for its own sake: `pnpm-lock.yaml` contains the package `parse-imports-exports`, which holds the exact sequence `s-expo`. A blind replace corrupts the lockfile and the failure surfaces nowhere near the rename. There is a test for precisely that.
+It touches an explicit list of files rather than sweeping the repository, and matches only whole words. That is not caution for its own sake: `pnpm-lock.yaml` contains the package `parse-imports-exports`, which holds the exact sequence `s-expo`. A blind replace corrupts the lockfile and the failure surfaces nowhere near the rename.
 
 ### What the rename cannot reach
 
 `GITHUB_HANDLE` in `src/features/home/components/github-profile.tsx` still points at whoever this template came from. Change it, or delete the start screen along with its Maestro flows — otherwise your app opens with someone else's identity.
 
-A heading that spells the name decoratively — `s(start)-expo` rather than `s-expo` — is invisible to a rename. Read the README once afterwards.
+The README is left alone on purpose: its heading and prose are yours to write, not something a rename should guess at.
 
 ## 2 · Pick an environment
 
