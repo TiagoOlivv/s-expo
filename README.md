@@ -1,6 +1,20 @@
-# my-app-template
+<p align="center">
+  <img src="https://github.com/tiagoolivv.png" width="120" height="120" alt="tiagoolivv on GitHub" />
+  <img src="./docs/assets/plus.svg" width="56" height="120" alt="plus" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/expo-logo-dark.svg" />
+    <img src="./docs/assets/expo-logo.svg" width="120" height="120" alt="Expo" />
+  </picture>
+</p>
 
-Opinionated Expo template for building responsive, multi-platform apps (phone and tablet, iOS and Android).
+<h1 align="center">s-expo</h1>
+
+<p align="center">
+  Opinionated Expo template for responsive, multi-platform apps.<br />
+  Phone and tablet, iOS and Android.
+</p>
+
+---
 
 Built on the **[Obytes React Native / Expo starter](https://github.com/obytes/react-native-template-obytes)** (v9.0.0), then trimmed to a single start screen with no authentication, upgraded to Expo SDK 57, and documented in [`docs/`](./docs/README.md).
 
@@ -125,6 +139,7 @@ Husky runs these on `pre-commit` and `commit-msg`. A commit that would fail CI n
 | How to run it | What it does |
 | --- | --- |
 | `pnpm e2e-test` | locally, against a build already installed on a simulator |
+| | three flows: `home` renders and every control is reachable, `language` and `theme` each drive one toggle and restore what they found |
 | `e2e-android.yml`, from the Actions tab | builds the APK with Gradle in CI, runs Maestro on an emulator |
 | `eas workflow:run .eas/workflows/e2e-test-android.yml` | EAS builds the APK and runs Maestro on it |
 
@@ -152,11 +167,15 @@ Full detail, including every secret and what it is for, in [`docs/ci/workflows.m
 
 ## What ships
 
-A single route rendering one screen: a centred title built from the app name plus `Starter`, a one-line description, and two round toggles in the top-right that flip the theme and the language in place. There is no authentication, no tab bar and no example feature — the first feature you add is the first feature in the app.
+A single route rendering one screen: a GitHub avatar and handle, a centred title built from the app name plus `Starter`, a one-line description, and two round toggles in the top-right that flip the theme and the language in place. There is no authentication, no tab bar and no example feature — the first feature you add is the first feature in the app.
+
+The avatar comes from `https://github.com/<handle>.png`, which redirects to the current picture for any public account — no API call and no token. `GITHUB_HANDLE` in `src/features/home/components/github-profile.tsx` is the single value to change when this template seeds a new app.
 
 Dark is the theme a fresh install starts on, and `en-US` is the starting language.
 
-`src/components/ui` is trimmed to what the screen actually renders — `Text`, the focus-aware status bar, the theme mapping and the React Native re-exports. The infrastructure underneath is untouched and fully wired: HTTP client, query provider, MMKV storage, i18n, theming, testing and CI.
+`src/components/ui` is trimmed to what the screen actually renders — `Text`, `SafeAreaView`, the focus-aware status bar, the theme mapping and the React Native re-exports (`View`, `Pressable`, `Image`, `ScrollView`, `TouchableOpacity`, `ActivityIndicator`).
+
+`SafeAreaView` is wrapped in `withUniwind` rather than re-exported. Uniwind's Metro resolver only teaches `className` to imports coming from `react-native`; a component re-exported from any other package silently drops the prop on native while web still styles it through the DOM. That one is worth knowing before you re-export a third-party component here. The infrastructure underneath is untouched and fully wired: HTTP client, query provider, MMKV storage, i18n, theming, testing and CI.
 
 Everything removed along the way — data fetching, Zustand stores, forms, settings rows, the button, input, checkbox, select and modal components — is preserved verbatim in [`docs/reference/removed-patterns.md`](./docs/reference/removed-patterns.md). Copy a pattern back when you need it instead of rewriting it.
 

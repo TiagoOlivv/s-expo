@@ -17,7 +17,7 @@ describe('homeScreen', () => {
     setup(<HomeScreen />);
 
     expect(screen.getByTestId('home-title')).toHaveTextContent(
-      'MyAppTemplate Starter',
+      'SExpo Starter',
     );
   });
 

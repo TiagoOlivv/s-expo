@@ -87,10 +87,10 @@ The trigger to add is written in a comment at the top of each file. The EAS path
 
 ### The app id
 
-`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, because the EAS `maestro` job does not pass one. All three runners build the **development** variant, so `com.myapptemplate.development` is correct everywhere. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
+`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, because the EAS `maestro` job does not pass one. All three runners build the **development** variant, so `com.sexpo.app.development` is correct everywhere. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
 
 Maestro Cloud is deliberately not used. It is a good product and it is paid; both workflows here run on a GitHub-hosted emulator instead.
 
 ## Keeping flows honest
 
-All three flows have run green against an iPhone 17e simulator, twice in a row from a cold start. A flow that has never passed is a liability: when it eventually fails you will not know whether it found a bug or was always broken — so run a new one before committing it, and do not commit one that has only been read.
+All three flows have run green twice in a row from a cold start against an iPhone 17e simulator, and once on the Android emulator in CI through `e2e-android.yml`. A flow that has never passed is a liability: when it eventually fails you will not know whether it found a bug or was always broken — so run a new one before committing it, and do not commit one that has only been read.

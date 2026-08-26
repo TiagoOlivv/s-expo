@@ -22,24 +22,24 @@ const EXPO_PUBLIC_APP_ENV = (process.env.EXPO_PUBLIC_APP_ENV
   ?? 'development') as z.infer<typeof envSchema>['EXPO_PUBLIC_APP_ENV'];
 
 const BUNDLE_IDS = {
-  development: 'com.myapptemplate.development',
-  preview: 'com.myapptemplate.preview',
-  production: 'com.myapptemplate',
+  development: 'com.sexpo.app.development',
+  preview: 'com.sexpo.app.preview',
+  production: 'com.sexpo.app',
 } as const;
 
 const PACKAGES = {
-  development: 'com.myapptemplate.development',
-  preview: 'com.myapptemplate.preview',
-  production: 'com.myapptemplate',
+  development: 'com.sexpo.app.development',
+  preview: 'com.sexpo.app.preview',
+  production: 'com.sexpo.app',
 } as const;
 
 const SCHEMES = {
-  development: 'my-app-template',
-  preview: 'my-app-template.preview',
-  production: 'my-app-template',
+  development: 's-expo',
+  preview: 's-expo.preview',
+  production: 's-expo',
 } as const;
 
-const NAME = 'MyAppTemplate';
+const NAME = 'SExpo';
 
 // Check if strict validation is required (before prebuild)
 const STRICT_ENV_VALIDATION = process.env.STRICT_ENV_VALIDATION === '1';

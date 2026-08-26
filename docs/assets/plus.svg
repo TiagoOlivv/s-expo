@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="56" height="120" role="img" aria-label="plus">
+  <title>plus</title>
+  <g fill="#7d8590">
+    <rect x="10.6" y="4" width="2.8" height="16" rx="1.4"/>
+    <rect x="4" y="10.6" width="16" height="2.8" rx="1.4"/>
+  </g>
+</svg>

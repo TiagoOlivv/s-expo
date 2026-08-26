@@ -2,7 +2,7 @@
 # does not pass -e APP_ID. Every runner - local, GitHub Actions and EAS - builds
 # the development variant so this one value is correct everywhere. Change it
 # together with BUNDLE_IDS/PACKAGES in env.ts.
-appId: com.myapptemplate.development
+appId: com.sexpo.app.development
 ---
 # Smoke test: the start screen renders and every control is reachable.
 #
@@ -23,7 +23,7 @@ appId: com.myapptemplate.development
 
 - assertVisible:
     id: home-title
-    text: MyAppTemplate Starter
+    text: SExpo Starter
 
 - assertVisible:
     id: home-description
