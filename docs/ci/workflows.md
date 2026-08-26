@@ -1,6 +1,6 @@
 # CI workflows
 
-Twelve workflows in `.github/workflows/`. Only three run on an ordinary pull request; the rest are manual, event-driven or gated behind a label.
+Thirteen workflows in `.github/workflows/`. Only three run on an ordinary pull request; the rest are manual, event-driven or gated behind a label.
 
 ## What triggers what
 
@@ -24,7 +24,7 @@ flowchart LR
     PUSH -.->|"only if deps changed"| DOC
     PUSH -.->|"only if images changed"| IMG["Compress images"]
 
-    MAN --> VER["New App Version"]
+    MAN --> VER["New App Version<br/>opens a bump PR"]
     MAN --> QA["EAS QA Build"]
     MAN --> PROD["EAS Production Build"]
     MAN --> E2EAS["E2E Android"]
@@ -62,31 +62,44 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 
 | Workflow | Trigger | Needs |
 | --- | --- | --- |
-| `new-app-version.yml` | manual: patch, minor or major | `GH_TOKEN`, optional |
+| `new-app-version.yml` | manual: patch, minor or major | `GH_TOKEN` |
+| `tag-release.yml` | a merged `chore/release-v*` pull request | `GH_TOKEN` |
 | `new-github-release.yml` | a pushed tag | — |
 | `eas-build-qa.yml` | a published release, or manual | `EXPO_TOKEN` |
 | `eas-build-prod.yml` | manual only | `EXPO_TOKEN` |
 
-Those four form a chain:
+They form a chain with a person in the middle of it:
 
 ```mermaid
 flowchart TD
     START(["you pick patch / minor / major"]) --> VER["New App Version"]
-    VER --> BUMP["bump version in package.json<br/>run prebuild so native matches"]
-    BUMP --> TAG["push a tag"]
+    VER --> BUMP["bump the version in package.json"]
+    BUMP --> PR["open chore/release-vX.Y.Z"]
+    PR --> REVIEW{{"you review and merge"}}
+    REVIEW --> TAGW["Tag Release<br/>triggered by the merge"]
+    TAGW --> TAG["push the tag"]
     TAG --> GHREL["New GitHub Release<br/>triggered by the tag"]
     GHREL --> PUB["release published"]
-    PUB --> QA["EAS QA Build<br/>preview profile, both platforms"]
+    PUB --> QA["EAS QA Build<br/>preview profile"]
 
     PROD["EAS Production Build"]
     MANUAL(["a separate, deliberate decision"]) --> PROD
-
-    TAG -.->|"no GH_TOKEN:<br/>the chain stops here, silently"| DEAD(["nothing fires"])
 ```
 
-*New App Version* bumps the version and pushes a tag, the tag publishes a GitHub release, and the published release starts the QA build. Production stays manual and outside the chain, so nothing reaches a store without someone deciding it should.
+**The release does not write to `main` directly.** A ruleset protects `main` and requires a pull request, with no bypass actors — and a version bump is a change to `main` like any other, so it goes through the same door. `package.json` is the only file the bump touches: `env.ts` reads the version from it and `app.config.ts` reads that.
 
-The chain has one failure mode that looks like nothing happening at all. A push made with the automatic `GITHUB_TOKEN` does not trigger other workflows, so without a `GH_TOKEN` the tag lands and *New GitHub Release* never fires.
+Trying it the other way is what led here. The old workflow ran `np`, which bumps, commits, tags and pushes to `main` in one go. `git push --follow-tags` is atomic per ref, not overall, so the tag landed and the branch was rejected:
+
+```
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+- Changes must be made through a pull request.
+ * [new tag]         v0.0.2 -> v0.0.2
+ ! [remote rejected] main -> main
+```
+
+That leaves a tag pointing at a commit no branch can reach. The ruleset covers `refs/heads/main` only, which is why the tag went through and why `tag-release.yml` needs no bypass.
+
+`GH_TOKEN` is required now rather than optional, and for two different reasons. Neither a pull request opened with the automatic `GITHUB_TOKEN` nor a tag pushed with it triggers another workflow — so with `GITHUB_TOKEN` the release pull request would arrive with no checks on it, and the tag would land without ever publishing a release. Both failures look like nothing happening at all.
 
 ## Secrets
 

@@ -1,0 +1,63 @@
+# ✍️ Description:
+# Tags a merged release pull request and, through that tag, starts the rest of
+# the chain: new-github-release.yml publishes the release, and the published
+# release starts eas-build-qa.yml.
+#
+# It fires only for a merged pull request whose branch is chore/release-v*,
+# which is what new-app-version.yml opens. Any other merge is ignored.
+#
+# The version is read from package.json on the merge commit rather than parsed
+# out of the branch name, so a hand-edited branch cannot produce a tag that
+# disagrees with what the app will report.
+
+# 🚨 GITHUB SECRETS REQUIRED:
+#         - GH_TOKEN: a token with Contents write access. A tag pushed with the
+#           automatic GITHUB_TOKEN does not trigger other workflows, so the
+#           release would never be published and the chain would stop here,
+#           silently. The ruleset on main does not cover tags, so no bypass is
+#           needed.
+
+name: Tag Release
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  tag:
+    name: Tag the merged release
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'chore/release-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 💯 Check for GH_TOKEN
+        run: |
+          if [ -z "${{ secrets.GH_TOKEN }}" ]; then
+            echo "GH_TOKEN is not set. A tag pushed with GITHUB_TOKEN does not trigger New GitHub Release, so the release would never be published."
+            exit 1
+          fi
+
+      - name: 📦 Checkout the merge commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: 📝 Git User Setup
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: 🏷️ Create and push the tag
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "$VERSION already exists. Nothing to do."
+            exit 0
+          fi
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "refs/tags/$VERSION"
+          echo "Pushed $VERSION"
