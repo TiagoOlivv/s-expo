@@ -120,22 +120,13 @@ jobs:
           cores: 2
           ram-size: 4096M
           profile: ${{ env.EMULATOR_PROFILE }}
+          # One command per line: this action runs the script line by line,
+          # each in its own `sh -c`, so multi-line constructs break and
+          # variables do not survive between lines. The check lives in a file
+          # for exactly that reason.
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
-
-            # The flows name the app id directly, so an APK from the wrong build
-            # profile installs fine and then fails inside Maestro with "Package
-            # ... is not installed" - which reads like a broken flow rather than
-            # the wrong artifact. Say so here instead.
-            APP_ID=$(grep -m1 '^appId:' .maestro/app/home.yaml | awk '{print $2}')
-            if [ -z "$(adb shell pm path "$APP_ID" 2>/dev/null)" ]; then
-              echo "::error::The APK does not contain $APP_ID, which every flow launches."
-              echo "Installed instead:"
-              adb shell pm list packages | grep "$(echo "$APP_ID" | cut -d. -f1-2)" || true
-              echo "The e2e-test profile is the one that matches: eas build --profile e2e-test --platform android"
-              exit 1
-            fi
-
+            ./scripts/assert-app-installed.sh
             $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts

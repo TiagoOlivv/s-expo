@@ -98,6 +98,12 @@ The trigger to add is written in a comment at the top of each file.
 
 The `e2e-test` profile in `eas.json` is the one that matches: `EXPO_PUBLIC_APP_ENV: development`, `buildType: apk`, and no dev client, so it runs standalone without Metro.
 
+### One command per line inside the emulator step
+
+`reactivecircus/android-emulator-runner` runs its `script:` **one line at a time, each in its own `sh -c`**. A multi-line `if … fi` is split across invocations and dies with `Syntax error: end of file unexpected`, and a variable set on one line is gone on the next.
+
+That is why the check lives in `scripts/assert-app-installed.sh` rather than inline. Anything that needs more than a single command belongs in a file the script calls.
+
 ```bash
 eas build --profile e2e-test --platform android
 ```
