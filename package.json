@@ -1,6 +1,6 @@
 {
   "name": "s-expo",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "packageManager": "pnpm@10.12.3",
   "repository": {
