@@ -17,7 +17,7 @@ on:
     inputs:
       apk-url:
         type: string
-        description: EAS APK URL
+        description: 'APK from the e2e-test profile: eas build --profile e2e-test --platform android'
         required: true
         default: ''
 
@@ -122,6 +122,20 @@ jobs:
           profile: ${{ env.EMULATOR_PROFILE }}
           script: |
             adb install "${{ github.workspace }}/app-release.apk"
+
+            # The flows name the app id directly, so an APK from the wrong build
+            # profile installs fine and then fails inside Maestro with "Package
+            # ... is not installed" - which reads like a broken flow rather than
+            # the wrong artifact. Say so here instead.
+            APP_ID=$(grep -m1 '^appId:' .maestro/app/home.yaml | awk '{print $2}')
+            if [ -z "$(adb shell pm path "$APP_ID" 2>/dev/null)" ]; then
+              echo "::error::The APK does not contain $APP_ID, which every flow launches."
+              echo "Installed instead:"
+              adb shell pm list packages | grep -i sexpo || true
+              echo "The e2e-test profile is the one that matches: eas build --profile e2e-test --platform android"
+              exit 1
+            fi
+
             $HOME/.maestro/bin/maestro test .maestro/ --format junit
 
       - name: Upload artifacts

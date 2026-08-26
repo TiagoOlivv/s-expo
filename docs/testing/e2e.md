@@ -92,7 +92,17 @@ The trigger to add is written in a comment at the top of each file.
 
 ### The app id
 
-`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`. Both workflows build the **development** variant, so `com.sexpo.app.development` is correct in either. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
+`.maestro/app/home.yaml` names the app id directly rather than taking it from `-e APP_ID`, and every flow launches it. It is `com.sexpo.app.development`.
+
+`e2e-android.yml` builds that variant itself, so it always matches. **`e2e-android-eas-build.yml` installs whatever APK you paste**, and an artifact from the wrong profile installs cleanly and then fails inside Maestro with `Package com.sexpo.app.development is not installed` — which reads like a broken flow rather than the wrong file. The workflow now checks after installing and says which package it actually got.
+
+The `e2e-test` profile in `eas.json` is the one that matches: `EXPO_PUBLIC_APP_ENV: development`, `buildType: apk`, and no dev client, so it runs standalone without Metro.
+
+```bash
+eas build --profile e2e-test --platform android
+```
+
+The `development` profile is not a substitute — `developmentClient: true` means it opens the dev launcher instead of the app. Change it together with `BUNDLE_IDS` and `PACKAGES` in `env.ts` — a mismatch fails with a launch error that looks nothing like its cause.
 
 Maestro Cloud is deliberately not used. It is a good product and it is paid; the workflows that run on the free tier use a GitHub-hosted emulator instead.
 
