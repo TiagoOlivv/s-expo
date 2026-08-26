@@ -134,14 +134,14 @@ Husky runs these on `pre-commit` and `commit-msg`. A commit that would fail CI n
 | `test.yml` | `jest`, with the summary posted as a comment | yes |
 | `expo-doctor.yml` | only when `package.json` or `pnpm-lock.yaml` changed | yes, when it runs |
 
-**End-to-end tests do not run automatically.** Three Maestro entry points exist and all three are manual, because a full Android build plus an emulator run costs about fifteen minutes of metered runner time on a private repository, and the EAS path spends build credits:
+**End-to-end tests do not run automatically.** Two Maestro entry points exist and both are manual, because a full Android build plus an emulator run is around an hour of runner time — metered while the repository is private:
 
 | How to run it | What it does |
 | --- | --- |
 | `pnpm e2e-test` | locally, against a build already installed on a simulator |
 | | three flows: `home` renders and every control is reachable, `language` and `theme` each drive one toggle and restore what they found |
 | `e2e-android.yml`, from the Actions tab | builds the APK with Gradle in CI, runs Maestro on an emulator |
-| `eas workflow:run .eas/workflows/e2e-test-android.yml` | EAS builds the APK and runs Maestro on it |
+| `e2e-android-eas-build.yml`, from the Actions tab | runs Maestro against an EAS build URL you paste |
 
 Wire one of them to `pull_request` when the cost is worth paying — the trigger to add is written in a comment at the top of each file.
 
@@ -161,7 +161,7 @@ The chain is automatic once you start it:
 
 One catch worth knowing before you rely on step 2 firing: a push made with the automatic `GITHUB_TOKEN` does **not** trigger other workflows. If `GH_TOKEN` is not set, *New App Version* still pushes its tag, but *New GitHub Release* never wakes up and the chain stops there. Supply a personal access token as `GH_TOKEN` to make it run end to end.
 
-Both EAS workflows need an `EXPO_TOKEN` secret, and `app.config.ts` ships with `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` empty on purpose. Until those are filled in, the release stages are inert — the pull-request gates work with no configuration at all.
+Both EAS workflows need an `EXPO_TOKEN` secret. `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` are filled in at the top of `app.config.ts` — replace both with your own when this template seeds a new app, using the id `eas init` prints. The pull-request gates need no configuration at all.
 
 Full detail, including every secret and what it is for, in [`docs/ci/workflows.md`](./docs/ci/workflows.md).
 
@@ -226,9 +226,10 @@ Never put a real secret in an `EXPO_PUBLIC_` variable — those are inlined in p
 
 ## Before shipping a real app
 
-- `app.config.ts` — set `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` (both are intentionally empty)
+- `app.config.ts` — replace `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` with your own; `eas init` prints the id and cannot write it for you, because the config is dynamic
 - `env.ts` — rename `NAME`, `BUNDLE_IDS`, `PACKAGES`, `SCHEMES`
 - `.env.*.example` — point `EXPO_PUBLIC_API_URL` at a real API, then `pnpm env:use <environment>`
+- EAS environment variables — `eas env:set` per environment. EAS Build cannot read your `.env`, and `prebuild` aborts without `EXPO_PUBLIC_API_URL`
 
 ## Git workflow
 

@@ -29,7 +29,6 @@ flowchart LR
     MAN --> PROD["EAS Production Build"]
     MAN --> E2EAS["E2E Android"]
     MAN --> E2EAS2["E2E from EAS APK"]
-    MAN --> EASWF["EAS Workflow<br/>build + Maestro"]
 
     TAG --> GHREL["New GitHub Release"]
     REL --> QA
@@ -56,7 +55,6 @@ These three are the gate. They need no secret and finish in a couple of minutes.
 | `expo-doctor.yml` | pull request touching `package.json` or `pnpm-lock.yaml` |
 | `e2e-android.yml` | manual only |
 | `e2e-android-eas-build.yml` | manual, takes an EAS APK URL |
-| `.eas/workflows/e2e-test-android.yml` | manual, via `eas workflow:run` |
 | `compress-images.yml` | pull request touching images |
 | `stale.yml` | schedule |
 
@@ -124,15 +122,13 @@ eas env:set --environment development --name EXPO_PUBLIC_API_URL \
 
 The value in **production** is still the placeholder. Point it at the real API before a production build.
 
-### `maestro_test` is a paid job
+### There is no EAS workflow
 
-`.eas/workflows/e2e-test-android.yml` cannot run on a free plan. `eas workflow:validate` refuses it outright:
+`.eas/` does not exist here, and EAS runs no tests for this project. `maestro_test` is a paid job type: on a free plan `eas workflow:validate` rejects such a workflow outright, so it could not be validated, let alone run.
 
-```
-Running maestro_test jobs requires a paid plan.
-```
+EAS is used for builds and submissions. Everything that runs tests runs on GitHub Actions.
 
-The file is kept because it is correct and becomes useful the day the plan changes. Until then, `e2e-android.yml` is the E2E path that works.
+If the plan changes, [the EAS Workflows docs](https://docs.expo.dev/eas/workflows/get-started/) cover the syntax, and the `e2e-test` profile in `eas.json` already builds the right artifact.
 
 ## Environments
 
