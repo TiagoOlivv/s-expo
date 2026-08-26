@@ -35,7 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   description: `${Env.EXPO_PUBLIC_NAME} Mobile App`,
   owner: EXPO_ACCOUNT_OWNER,
   scheme: Env.EXPO_PUBLIC_SCHEME,
-  slug: 'my-app-template',
+  slug: 's-expo',
   version: Env.EXPO_PUBLIC_VERSION.toString(),
   orientation: 'portrait',
   icon: './assets/icon.png',

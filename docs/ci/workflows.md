@@ -111,6 +111,30 @@ Nothing here uses `MAESTRO_CLOUD_API_KEY`. Maestro Cloud is paid and this templa
 
 `APP_ENV` in a workflow must name a profile that exists in `eas.json`: `development`, `preview`, `production` or `simulator`. The upstream template used `staging`, which does not exist here — that mismatch made `pnpm prebuild:staging` fail and is worth remembering if you copy a workflow from elsewhere.
 
+## Runners
+
+Every job runs on `ubuntu-latest`. Nothing here uses a macOS runner, including the Android emulator job that upstream pointed at one.
+
+Three reasons, in order of weight. A macOS minute bills at ten times an Ubuntu minute on a private repository, so a fifteen-minute emulator run spends a hundred and fifty of the two thousand free monthly minutes against about seven. `reactivecircus/android-emulator-runner` recommends Ubuntu outright and calls it two to three times faster. And `macOS-latest` is arm64 now, where `api-level: 29` has no system image at all — the job was aimed at a runner it could not have passed on.
+
+Ubuntu asks for one thing in exchange: KVM, which the runner does not hand over by default. The udev rule at the top of the emulator job is what grants it.
+
+### Disk
+
+Both Android jobs remove about 12 GB of unused toolchains before doing anything — dotnet, GHC, Swift, Boost, CodeQL and the preinstalled docker images. `ubuntu-latest` ships with roughly 14 GB free, which an Android build plus an emulator system image does not fit into: the first run here died thirty-nine minutes in with `No space left on device`, and the runner took its own logs down with it.
+
+`df` runs on both sides of the cleanup. When it is tight again, the log will say so instead of ending mid-sentence.
+
+The Android SDK and its NDK are deliberately left in place. Some Expo modules still compile from source against them, and removing the NDK trades a disk problem for a download or a build failure.
+
+### The AVD cache key
+
+```yaml
+key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_PROFILE }}
+```
+
+The API level and the profile are job-level `env`, referenced by both the cache key and the emulator steps. The key used to be the literal string `avd-cache`, which survived any change to either value and handed back a snapshot of the old device — the flows would then have run against something nobody configured.
+
 ## The Node version is pinned for a reason
 
 `.github/actions/setup-node-pnpm-install` asks for **Node 24**. Do not move it to 22.

@@ -56,7 +56,7 @@
   ],
 
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["Uniwind", "Maestro", "MMKV", "myapptemplate", "commitlint", "Zustand", "antfu"],
+  "cSpell.words": ["Uniwind", "Maestro", "MMKV", "sexpo", "commitlint", "Zustand", "antfu"],
   "i18n-ally.localesPaths": ["src/translations/"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.disabled": false, // make sure to disable i18n-ally in your global setting and only enable it for such projects

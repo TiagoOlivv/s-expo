@@ -11,7 +11,7 @@
 | `use-theme-config.tsx` | maps the Uniwind theme onto a navigation theme |
 | `colors.js` | the palette as JavaScript values |
 | `safe-area-view.tsx` | `SafeAreaView` wrapped so `className` works on native |
-| `index.tsx` | the barrel, plus `View`, `Pressable`, `ScrollView` re-exported |
+| `index.tsx` | the barrel, plus `View`, `Pressable`, `Image`, `ScrollView`, `TouchableOpacity` and `ActivityIndicator` re-exported from `react-native` |
 
 The kit is deliberately small. This template was trimmed to what the screen actually renders; the components that were removed — button, input, checkbox, select, modal — are preserved verbatim in [../reference/removed-patterns.md](../reference/removed-patterns.md). Copy one back when you need it rather than writing it again.
 

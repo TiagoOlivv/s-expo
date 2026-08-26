@@ -1,11 +1,11 @@
 {
-  "name": "my-app-template",
+  "name": "s-expo",
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@10.12.3",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/user/repo-name.git"
+    "url": "git+https://github.com/TiagoOlivv/s-expo.git"
   },
   "main": "expo-router/entry",
   "scripts": {
