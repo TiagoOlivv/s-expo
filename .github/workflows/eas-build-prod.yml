@@ -11,14 +11,14 @@
 #         - EXPO_TOKEN: Expo token to authenticate with EAS
 #         - You can get it from https://expo.dev/settings/access-tokens
 
-name: EAS Production Build (Android & IOS) (EAS)
+name: EAS Production Build (Android)
 
 on:
   workflow_dispatch:
 
 jobs:
   Build:
-    name: EAS Production Build (Android & IOS) (EAS)
+    name: EAS Production Build (Android)
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
@@ -42,3 +42,4 @@ jobs:
           APP_ENV: production
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
+          IOS: false # TODO: set as true when IOS account is ready

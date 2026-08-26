@@ -11,7 +11,7 @@
 #         - EXPO_TOKEN: Expo token to authenticate with EAS
 #         - You can get it from https://expo.dev/settings/access-tokens
 
-name: EAS QA Build (Android & IOS) (EAS)
+name: EAS QA Build (Android)
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   Build:
-    name: EAS QA Build (Android & IOS) (EAS)
+    name: EAS QA Build (Android)
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
