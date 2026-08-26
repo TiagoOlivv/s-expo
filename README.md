@@ -41,10 +41,13 @@ The project structure, the CI workflows and most of the tooling choices come fro
 
 ```bash
 pnpm install
-pnpm start            # dev server
-pnpm ios              # run on iOS simulator
-pnpm android          # run on Android emulator
+pnpm env:use development   # copies .env.development.example onto .env.local
+pnpm start                 # dev server
+pnpm ios                   # run on iOS simulator
+pnpm android               # run on Android emulator
 ```
+
+The second line is not optional on a fresh clone. No `.env` is committed, and `env.ts` validates `EXPO_PUBLIC_API_URL` as a URL — `pnpm prebuild:<environment>` refuses to run without one.
 
 This template uses an Expo custom dev client, so Expo Go is not supported. Build and install the dev client first.
 
@@ -230,12 +233,11 @@ EAS builds do not use these files: `eas.json` sets `EXPO_PUBLIC_APP_ENV` per bui
 
 Never put a real secret in an `EXPO_PUBLIC_` variable — those are inlined in plain text into the app bundle.
 
-## Before shipping a real app
+## Starting a new project from this template
 
-- `app.config.ts` — replace `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` with your own; `eas init` prints the id and cannot write it for you, because the config is dynamic
-- `env.ts` — rename `NAME`, `BUNDLE_IDS`, `PACKAGES`, `SCHEMES`
-- `.env.*.example` — point `EXPO_PUBLIC_API_URL` at a real API, then `pnpm env:use <environment>`
-- EAS environment variables — `eas env:set` per environment. EAS Build cannot read your `.env`, and `prebuild` aborts without `EXPO_PUBLIC_API_URL`
+**[`docs/guides/start-a-new-project.md`](./docs/guides/start-a-new-project.md) is the ordered checklist** — naming and bundle ids, linking EAS, the two places `EXPO_PUBLIC_API_URL` has to exist, the exact token permissions the release chain needs, and what to expect the first time each thing runs.
+
+It was written by doing it once and hitting every wall. Follow it and the walls are already gone; the template is then complete except for the idea.
 
 ## Git workflow
 
