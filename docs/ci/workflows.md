@@ -103,9 +103,36 @@ The chain has one failure mode that looks like nothing happening at all. A push 
 
 Nothing here uses `MAESTRO_CLOUD_API_KEY`. Maestro Cloud is paid and this template does not depend on it.
 
-## Before the first EAS build
+## EAS
 
-`app.config.ts` ships with `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` empty on purpose. Fill both in — `eas init` generates the project id — or every EAS workflow fails at authentication.
+The project is linked: `@tiagoolivv/s-expo`, with `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` filled in at the top of `app.config.ts`. When this template seeds a new app, run `eas init` and replace both.
+
+`eas init` cannot write them for you. A dynamic config — `app.config.ts` rather than `app.json` — is read-only to the CLI, so the command prints the id and stops with `Cannot automatically write to dynamic config`. That is expected, not a failure.
+
+### Environment variables live on EAS, not in your `.env`
+
+Each profile in `eas.json` names an `environment`, and that points at an environment on Expo's servers. EAS Build has no access to your machine, so `.env.local` is invisible to it.
+
+`prebuild` runs with `STRICT_ENV_VALIDATION=1` and aborts without `EXPO_PUBLIC_API_URL` — the same failure that took the GitHub workflow down before the variable was supplied there. All three environments have it set:
+
+```bash
+eas env:set --environment development --name EXPO_PUBLIC_API_URL \
+  --value https://api.dev.example.com/ --visibility plaintext --scope project
+```
+
+`plaintext` because any `EXPO_PUBLIC_` value is inlined into the bundle in clear text regardless. Marking it secret would be theatre.
+
+The value in **production** is still the placeholder. Point it at the real API before a production build.
+
+### `maestro_test` is a paid job
+
+`.eas/workflows/e2e-test-android.yml` cannot run on a free plan. `eas workflow:validate` refuses it outright:
+
+```
+Running maestro_test jobs requires a paid plan.
+```
+
+The file is kept because it is correct and becomes useful the day the plan changes. Until then, `e2e-android.yml` is the E2E path that works.
 
 ## Environments
 
