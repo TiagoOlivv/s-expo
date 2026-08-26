@@ -6,7 +6,12 @@
 # This workflow will be triggered automatically after the new app version workflow has been executed successfully.
 # It will create a new GitHub release with the new app version and the release notes.
 
-# 🚨 GITHUB SECRETS REQUIRED: None
+# 🚨 GITHUB SECRETS REQUIRED:
+#         - GH_TOKEN: a token with Contents write access.
+#           A release created with the automatic GITHUB_TOKEN does not trigger
+#           anything either, so eas-build-qa.yml - which listens for a published
+#           release - would never wake up. The release appears, correctly, and
+#           the chain silently ends there.
 
 name: New GitHub Release
 
@@ -30,5 +35,9 @@ jobs:
       - name: 🏃‍♂️Create A Draft Github Release
         uses: ncipollo/release-action@v1
         with:
+          # Not github.token, which is what this action defaults to. Nothing
+          # done with GITHUB_TOKEN triggers another workflow, and a published
+          # release is exactly the event eas-build-qa.yml is waiting for.
+          token: ${{ secrets.GH_TOKEN }}
           generateReleaseNotes: true
           draft: false

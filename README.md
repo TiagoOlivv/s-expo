@@ -165,7 +165,7 @@ One decision starts it, one review carries it through, and the rest is automatic
 
 `package.json` is the only file a release touches. `env.ts` reads the version from it and `app.config.ts` reads that, so the app, the build number and the store listing all follow from one line. There is no native code in the repository to keep in step — `ios/` and `android/` are generated.
 
-`GH_TOKEN` is required, and for a reason that is easy to trip over: **nothing done with the automatic `GITHUB_TOKEN` triggers another workflow.** A pull request opened with it arrives with no checks on it, and a tag pushed with it never publishes a release. Both failures look exactly like nothing happening.
+`GH_TOKEN` is required, and for a reason that is easy to trip over: **nothing done with the automatic `GITHUB_TOKEN` triggers another workflow.** Not a pull request, not a tag, not a release. Each link in the chain would look like it worked — the PR opens, the tag lands, the release publishes — while the next step never fires. Every step that starts the next one is handed the PAT explicitly.
 
 Both EAS workflows need an `EXPO_TOKEN` secret. `EXPO_ACCOUNT_OWNER` and `EAS_PROJECT_ID` are filled in at the top of `app.config.ts` — replace both with your own when this template seeds a new app, using the id `eas init` prints. The pull-request gates need no configuration at all.
 
