@@ -39,7 +39,19 @@ runs:
 
     - name: Generate Test APK
       run: |
-        pnpm prebuild:${{ inputs.APP_ENV }}
+        # Retried for the same reason as the prebuild in .github/actions/eas-build:
+        # app-icon-badge reads back an icon it is still writing, and about one
+        # Linux run in four fails with "Could not find MIME for Buffer <null>".
+        for attempt in 1 2 3; do
+          echo "prebuild attempt $attempt"
+          pnpm prebuild:${{ inputs.APP_ENV }} && break
+          if [ "$attempt" = "3" ]; then
+            echo "prebuild failed three times - this is not the known flake"
+            exit 1
+          fi
+          rm -rf ios android
+          sleep 5
+        done
         cd  android
         chmod +x ./gradlew
         ./gradlew assembleRelease --no-daemon

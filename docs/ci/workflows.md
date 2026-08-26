@@ -205,23 +205,32 @@ key: avd-${{ runner.os }}-api${{ env.EMULATOR_API_LEVEL }}-${{ env.EMULATOR_PROF
 
 The API level and the profile are job-level `env`, referenced by both the cache key and the emulator steps. The key used to be the literal string `avd-cache`, which survived any change to either value and handed back a snapshot of the old device — the flows would then have run against something nobody configured.
 
-## The Node version is pinned for a reason
+## Prebuild fails intermittently on Linux
 
-`.github/actions/setup-node-pnpm-install` asks for **Node 24**. Do not move it to 22.
-
-`pnpm prebuild` fails there, on Linux, and only there:
+Roughly one Linux prebuild in four dies about twelve seconds in:
 
 ```
 Error: [android.dangerous]: withAndroidDangerousBaseMod:
        Could not find MIME for Buffer <null>
     at Jimp.parseBitmap (node_modules/jimp-compact/dist/jimp.js)
+    at FSReqCallback.readFileAfterClose
 ```
 
-It was isolated on this repository with one variable — the same tree and the same actions, changing only `node-version`. 20 passes, 22 fails after twelve seconds, 24 passes. macOS is unaffected: the same prebuild runs clean there on Node 22.
+Both call sites — `.github/actions/eas-build` and `.github/actions/setup-jdk-generate-apk` — retry it three times, clearing `ios/` and `android/` between attempts. Three failures in a row is treated as a real failure, not the flake.
 
-The failure comes from `@expo/image-utils`, which pins `jimp-compact@0.16.1`. That pin is in the latest published version, so there is nothing upstream to upgrade to. Every development prebuild passes through it, because `app-icon-badge` in `app.config.ts` badges the icons for any environment that is not production.
+**It is a race, not a bad input.** `app-icon-badge` badges the icons for every environment that is not production: it writes `icon.png` and `foregroundImage.png` and reads them straight back through Jimp, which bundles `jimp-compact@0.16.1` by way of `@expo/image-utils`. A null buffer out of an async `readFile` is a file that had not finished being written. macOS never shows it; every observed failure has been on a Linux runner.
 
-Node 20 also works and is out of support, which is why 24 is the one written down.
+Things that were ruled out, each by running it:
+
+| Suspected | Ruled out by |
+| --- | --- |
+| the PNG assets | valid 8-bit non-interlaced, and the committed blobs match the working tree byte for byte |
+| the Node version | it has failed and passed on the same version; eight runs show no pattern |
+| `preview` versus `development` | both succeeded back to back on one runner |
+| `expo/expo-github-action` disturbing `node_modules` | prebuild succeeded straight after it |
+| the `eas-build` composite | the exact path, reproduced with only the `eas build` call removed, succeeded |
+
+An earlier version of this section blamed Node 22. That was written from a single failure and a single success, and more runs disproved it — the same Node 24 that was called safe has since failed. Node stays at 24 because it is supported, not because it fixes anything.
 
 ## Running a check locally
 

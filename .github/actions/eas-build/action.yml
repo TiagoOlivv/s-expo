@@ -77,7 +77,27 @@ runs:
     # validates the environment strictly, and the EAS environment is not visible
     # to it - so the value has to arrive from the repository.
     - name: ⚙️ Run Prebuild
-      run: pnpm prebuild:${{ inputs.APP_ENV }}
+      run: |
+        # Retried because prebuild fails intermittently on Linux runners.
+        # app-icon-badge writes the badged icons and reads them straight back
+        # through Jimp, and roughly one run in four loses that race:
+        #
+        #   [android.dangerous]: withAndroidDangerousBaseMod:
+        #   Could not find MIME for Buffer <null>
+        #     at FSReqCallback.readFileAfterClose
+        #
+        # A null buffer out of an async readFile is a file that had not finished
+        # being written. Nothing about the inputs is wrong, so running it again
+        # is the honest fix until the race is fixed upstream.
+        for attempt in 1 2 3; do
+          echo "prebuild attempt $attempt"
+          pnpm prebuild:${{ inputs.APP_ENV }} && exit 0
+          echo "attempt $attempt failed"
+          rm -rf ios android
+          sleep 5
+        done
+        echo "prebuild failed three times - this is not the known flake"
+        exit 1
       shell: bash
       env:
         EXPO_PUBLIC_API_URL: ${{ inputs.EXPO_PUBLIC_API_URL }}
